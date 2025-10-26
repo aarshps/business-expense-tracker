@@ -31,11 +31,19 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [formState, setFormState] = useState<FormState>('view');
   const [currentEmployee, setCurrentEmployee] = useState<Employee | null>(null);
-  const [formData, setFormData] = useState({
+  // Define a type for our form data that's compatible with Employee type
+  type FormData = {
+    name: string;
+    email: string;
+    phone: string;
+    type: 'EMPLOYEE' | 'INVESTOR'; // Explicitly define both possible values
+  };
+
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
-    type: 'INVESTOR' as const  // Default to INVESTOR
+    type: 'INVESTOR' // Default to INVESTOR
   });
 
   // Handle change for all form fields including type
@@ -50,6 +58,11 @@ export default function Home() {
     if (name === 'name' || name === 'email' || name === 'phone' || name === 'type') {
       logUserAction('form_input_change', { field: name, value });
     }
+  };
+
+  // Helper to update form data that properly handles type
+  const updateFormData = (data: Partial<FormData>) => {
+    setFormData(prev => ({ ...prev, ...data }));
   };
 
   // Fetch employees on component mount
@@ -89,7 +102,7 @@ export default function Home() {
       name: employee.name,
       email: employee.email,
       phone: employee.phone,
-      type: employee.type  // Include the type
+      type: employee.type as 'EMPLOYEE' | 'INVESTOR' // Type assertion to prevent error
     });
   };
 
