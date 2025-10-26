@@ -20,14 +20,14 @@ A Next.js application for managing employee information with comprehensive loggi
 
 ## Logging System
 
-This application includes a comprehensive logging system that writes logs to local files:
+This application includes a comprehensive logging system that writes logs to local files in development:
 
 - **Frontend logs**: Captures user interactions, form submissions, and UI events (`logs/frontend.log`)
 - **Backend logs**: Records API requests, responses, and server-side operations (`logs/backend.log`)
 - **Database logs**: Tracks all database operations (create, read, update, delete) (`logs/database.log`)
 - **Error logs**: Separate error files for each service (`logs/*.error.log`)
 
-Logs are automatically rotated when they reach 20MB, keeping up to 5 files per service.
+In production, logs are managed through the platform's logging system (e.g., Vercel logs). Logs are automatically rotated when they reach 20MB in development, keeping up to 5 files per service.
 
 ## Setup Instructions
 

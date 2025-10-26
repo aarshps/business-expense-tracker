@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "dev:log": "cross-env NODE_ENV=development LOG_LEVEL=verbose next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
