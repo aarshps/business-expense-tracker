@@ -2,6 +2,8 @@
 
 A Next.js application for managing employee information with comprehensive logging capabilities.
 
+<!-- Updated for Vercel deployment fix -->
+
 ## Features
 
 - Add new employees
