@@ -10,7 +10,16 @@ declare global {
 let prisma: PrismaClient;
 
 if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
+  // In production, use the data proxy if it's configured
+  prisma = new PrismaClient({
+    ...(process.env.PRISMA_CLIENT_ENGINE_TYPE === 'dataproxy' && {
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL!,
+        },
+      },
+    }),
+  });
 } else {
   if (!global.prisma) {
     global.prisma = new PrismaClient();

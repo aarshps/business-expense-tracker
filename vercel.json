@@ -1,7 +1,22 @@
 {
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["node_modules/.prisma/client/**"]
+      }
+    }
+  ],
   "build": {
     "env": {
+      "DATABASE_URL": "${DATABASE_URL}",
       "PRISMA_CLIENT_ENGINE_TYPE": "dataproxy"
+    }
+  },
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 30
     }
   }
 }

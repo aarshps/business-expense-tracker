@@ -157,5 +157,16 @@ After running the application, log files will be created in the `logs/` director
 For deployment, ensure you set the following environment variable:
 
 - `DATABASE_URL`: PostgreSQL connection string for production or SQLite for development
+- `DIRECT_URL` (optional): Direct database connection URL for Vercel deployments with Data Proxy
+
+### Vercel Deployment Configuration
+
+This application is configured to work with Vercel deployments. For the Prisma client to work properly in Vercel's environment:
+
+1. The `prisma/schema.prisma` file includes the correct binary targets for Linux environments
+2. The `vercel.json` file configures the build process to include Prisma client files
+3. The `src/lib/prisma.ts` file handles different initialization for production vs development
+
+For production deployments with persistent data, it's recommended to use PostgreSQL instead of SQLite, as SQLite databases are not suitable for serverless functions due to the ephemeral file system.
 
 Note: For production deployments, logging configuration may need to be adjusted based on the hosting platform's file system capabilities.
