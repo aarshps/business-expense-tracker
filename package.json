@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:log": "cross-env NODE_ENV=development LOG_LEVEL=verbose next dev",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
