@@ -41,8 +41,7 @@ describe('Employee API Routes', () => {
   describe('GET /api/employees (getAllEmployees)', () => {
     it('should return all employees', async () => {
       const mockEmployees = [mockEmployee];
-      (employeeService.getAll as jest.MockedFunction<typeof employeeService.getAll>)
-        .mockResolvedValue(mockEmployees);
+      (employeeService.getAll as jest.Mock).mockResolvedValue(mockEmployees);
 
       const request = new NextRequest('http://localhost:3000/api/employees', {
         method: 'GET',
@@ -59,8 +58,7 @@ describe('Employee API Routes', () => {
     });
 
     it('should handle errors when fetching employees fails', async () => {
-      (employeeService.getAll as jest.MockedFunction<typeof employeeService.getAll>)
-        .mockRejectedValue(new Error('Database error'));
+      (employeeService.getAll as jest.Mock).mockRejectedValue(new Error('Database error'));
 
       const request = new NextRequest('http://localhost:3000/api/employees', {
         method: 'GET',
@@ -84,8 +82,7 @@ describe('Employee API Routes', () => {
         type: 'INVESTOR' as EmployeeType,
       };
 
-      (employeeService.create as jest.MockedFunction<typeof employeeService.create>)
-        .mockResolvedValue({ ...mockEmployee, ...newEmployeeData, id: '2' });
+      (employeeService.create as jest.Mock).mockResolvedValue({ ...mockEmployee, ...newEmployeeData, id: '2' });
 
       const request = new NextRequest('http://localhost:3000/api/employees', {
         method: 'POST',
@@ -110,13 +107,12 @@ describe('Employee API Routes', () => {
         phone: '0987654321',
       };
 
-      (employeeService.create as jest.MockedFunction<typeof employeeService.create>)
-        .mockResolvedValue({ 
-          ...mockEmployee, 
-          ...newEmployeeData, 
-          id: '2',
-          type: 'INVESTOR' as EmployeeType // Default value
-        });
+      (employeeService.create as jest.Mock).mockResolvedValue({ 
+        ...mockEmployee, 
+        ...newEmployeeData, 
+        id: '2',
+        type: 'INVESTOR' as EmployeeType // Default value
+      });
 
       const request = new NextRequest('http://localhost:3000/api/employees', {
         method: 'POST',
@@ -164,8 +160,7 @@ describe('Employee API Routes', () => {
         phone: '0987654321',
       };
 
-      (employeeService.create as jest.MockedFunction<typeof employeeService.create>)
-        .mockRejectedValue(new Error('Database error'));
+      (employeeService.create as jest.Mock).mockRejectedValue(new Error('Database error'));
 
       const request = new NextRequest('http://localhost:3000/api/employees', {
         method: 'POST',
@@ -184,8 +179,7 @@ describe('Employee API Routes', () => {
 
   describe('GET /api/employees/[id] (getEmployeeById)', () => {
     it('should return employee by ID', async () => {
-      (employeeService.getById as jest.MockedFunction<typeof employeeService.getById>)
-        .mockResolvedValue(mockEmployee);
+      (employeeService.getById as jest.Mock).mockResolvedValue(mockEmployee);
 
       const request = new NextRequest('http://localhost:3000/api/employees/1', {
         method: 'GET',
@@ -201,8 +195,7 @@ describe('Employee API Routes', () => {
     });
 
     it('should return 404 if employee not found', async () => {
-      (employeeService.getById as jest.MockedFunction<typeof employeeService.getById>)
-        .mockResolvedValue(null);
+      (employeeService.getById as jest.Mock).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/employees/999', {
         method: 'GET',
@@ -225,8 +218,7 @@ describe('Employee API Routes', () => {
         type: 'INVESTOR' as EmployeeType,
       };
 
-      (employeeService.update as jest.MockedFunction<typeof employeeService.update>)
-        .mockResolvedValue({ ...mockEmployee, ...updateData });
+      (employeeService.update as jest.Mock).mockResolvedValue({ ...mockEmployee, ...updateData });
 
       const request = new NextRequest('http://localhost:3000/api/employees/1', {
         method: 'PUT',
@@ -267,8 +259,7 @@ describe('Employee API Routes', () => {
         name: 'Updated Name',
       };
 
-      (employeeService.update as jest.MockedFunction<typeof employeeService.update>)
-        .mockResolvedValue(null);
+      (employeeService.update as jest.Mock).mockResolvedValue(null);
 
       const request = new NextRequest('http://localhost:3000/api/employees/999', {
         method: 'PUT',
@@ -287,8 +278,7 @@ describe('Employee API Routes', () => {
 
   describe('DELETE /api/employees/[id] (deleteEmployee)', () => {
     it('should delete employee successfully', async () => {
-      (employeeService.delete as jest.MockedFunction<typeof employeeService.delete>)
-        .mockResolvedValue(true);
+      (employeeService.delete as jest.Mock).mockResolvedValue(true);
 
       const request = new NextRequest('http://localhost:3000/api/employees/1', {
         method: 'DELETE',
@@ -304,8 +294,7 @@ describe('Employee API Routes', () => {
     });
 
     it('should return 404 if employee not found for deletion', async () => {
-      (employeeService.delete as jest.MockedFunction<typeof employeeService.delete>)
-        .mockResolvedValue(false);
+      (employeeService.delete as jest.Mock).mockResolvedValue(false);
 
       const request = new NextRequest('http://localhost:3000/api/employees/999', {
         method: 'DELETE',

@@ -46,11 +46,11 @@ describe('Employee Migration Script', () => {
 
   it('should migrate existing employees to INVESTOR type', async () => {
     // Mock the updateMany to return a count
-    (mockPrisma.employee.updateMany as jest.MockedFunction<any>)
+    (mockPrisma.employee.updateMany as jest.Mock)
       .mockResolvedValue({ count: 2 });
 
     // Mock finding employees
-    (mockPrisma.employee.findMany as jest.MockedFunction<any>)
+    (mockPrisma.employee.findMany as jest.Mock)
       .mockResolvedValue([
         { id: '1', name: 'Employee 1', type: 'EMPLOYEE' },
         { id: '2', name: 'Employee 2', type: 'INVESTOR' },
@@ -89,7 +89,7 @@ describe('Employee Migration Script', () => {
   it('should handle database errors during migration', async () => {
     const errorMessage = 'Database connection failed';
     
-    (mockPrisma.employee.updateMany as jest.MockedFunction<any>)
+    (mockPrisma.employee.updateMany as jest.Mock)
       .mockRejectedValue(new Error(errorMessage));
 
     // Expect the promise to reject when updateMany fails

@@ -39,8 +39,7 @@ describe('Employee Service', () => {
   describe('getAll', () => {
     it('should return all employees', async () => {
       const mockEmployees = [mockEmployee];
-      (prisma.employee.findMany as jest.MockedFunction<typeof prisma.employee.findMany>)
-        .mockResolvedValue(mockEmployees);
+      (prisma.employee.findMany as jest.Mock).mockResolvedValue(mockEmployees);
 
       const result = await employeeService.getAll();
 
@@ -56,8 +55,7 @@ describe('Employee Service', () => {
 
   describe('getById', () => {
     it('should return employee by ID', async () => {
-      (prisma.employee.findUnique as jest.MockedFunction<typeof prisma.employee.findUnique>)
-        .mockResolvedValue(mockEmployee);
+      (prisma.employee.findUnique as jest.Mock).mockResolvedValue(mockEmployee);
 
       const result = await employeeService.getById('1');
 
@@ -69,8 +67,7 @@ describe('Employee Service', () => {
     });
 
     it('should return null if employee not found', async () => {
-      (prisma.employee.findUnique as jest.MockedFunction<typeof prisma.employee.findUnique>)
-        .mockResolvedValue(null);
+      (prisma.employee.findUnique as jest.Mock).mockResolvedValue(null);
 
       const result = await employeeService.getById('999');
 
@@ -87,8 +84,7 @@ describe('Employee Service', () => {
         type: 'INVESTOR' as EmployeeType,
       };
 
-      (prisma.employee.create as jest.MockedFunction<typeof prisma.employee.create>)
-        .mockResolvedValue({ ...mockEmployee, ...newEmployeeData, id: '2' });
+      (prisma.employee.create as jest.Mock).mockResolvedValue({ ...mockEmployee, ...newEmployeeData, id: '2' });
 
       const result = await employeeService.create(newEmployeeData);
 
@@ -110,8 +106,7 @@ describe('Employee Service', () => {
         email: 'updated@example.com',
       };
 
-      (prisma.employee.update as jest.MockedFunction<typeof prisma.employee.update>)
-        .mockResolvedValue({ ...mockEmployee, ...updateData });
+      (prisma.employee.update as jest.Mock).mockResolvedValue({ ...mockEmployee, ...updateData });
 
       const result = await employeeService.update('1', updateData);
 
@@ -132,8 +127,7 @@ describe('Employee Service', () => {
         name: 'Updated Name',
       };
 
-      (prisma.employee.update as jest.MockedFunction<typeof prisma.employee.update>)
-        .mockRejectedValue(new Error('Employee not found'));
+      (prisma.employee.update as jest.Mock).mockRejectedValue(new Error('Employee not found'));
 
       const result = await employeeService.update('999', updateData);
 
@@ -148,8 +142,7 @@ describe('Employee Service', () => {
 
   describe('delete', () => {
     it('should delete an employee successfully', async () => {
-      (prisma.employee.delete as jest.MockedFunction<typeof prisma.employee.delete>)
-        .mockResolvedValue(mockEmployee);
+      (prisma.employee.delete as jest.Mock).mockResolvedValue(mockEmployee);
 
       const result = await employeeService.delete('1');
 
@@ -164,8 +157,7 @@ describe('Employee Service', () => {
     });
 
     it('should return false if employee not found for deletion', async () => {
-      (prisma.employee.delete as jest.MockedFunction<typeof prisma.employee.delete>)
-        .mockRejectedValue(new Error('Employee not found'));
+      (prisma.employee.delete as jest.Mock).mockRejectedValue(new Error('Employee not found'));
 
       const result = await employeeService.delete('999');
 

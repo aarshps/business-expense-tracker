@@ -1,31 +1,30 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi, Mock } from 'vitest';
 import Home from '@/app/page';
 import { employeeService } from '@/lib/employeeService';
 
 // Mock the employee service
-vi.mock('@/lib/employeeService', () => ({
+jest.mock('@/lib/employeeService', () => ({
   employeeService: {
-    getAll: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
+    getAll: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
   }
 }));
 
 // Mock the fetch API
-global.fetch = vi.fn();
+global.fetch = jest.fn();
 
 // Mock the logUserAction function
-vi.mock('@/lib/middleware', () => ({
-  logUserAction: vi.fn(),
+jest.mock('@/lib/middleware', () => ({
+  logUserAction: jest.fn(),
 }));
 
 describe('Employee Management UI', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    (fetch as Mock).mockImplementation(() => Promise.resolve({
+    jest.clearAllMocks();
+    (global.fetch as jest.Mock).mockImplementation(() => Promise.resolve({
       json: () => Promise.resolve([]),
       ok: true,
     }));
@@ -45,7 +44,7 @@ describe('Employee Management UI', () => {
         }
       ];
 
-      (employeeService.getAll as Mock).mockResolvedValue(mockEmployees);
+      (employeeService.getAll as jest.Mock).mockResolvedValue(mockEmployees);
 
       render(<Home />);
 
@@ -59,7 +58,7 @@ describe('Employee Management UI', () => {
     });
 
     it('should show "No employees found" message when there are no employees', async () => {
-      (employeeService.getAll as Mock).mockResolvedValue([]);
+      (employeeService.getAll as jest.Mock).mockResolvedValue([]);
 
       render(<Home />);
 
@@ -73,8 +72,8 @@ describe('Employee Management UI', () => {
 
   describe('Create Employee', () => {
     it('should allow creating a new employee', async () => {
-      (employeeService.getAll as Mock).mockResolvedValue([]);
-      (employeeService.create as Mock).mockResolvedValue({
+      (employeeService.getAll as jest.Mock).mockResolvedValue([]);
+      (employeeService.create as jest.Mock).mockResolvedValue({
         id: '2',
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -139,8 +138,8 @@ describe('Employee Management UI', () => {
         }
       ];
 
-      (employeeService.getAll as Mock).mockResolvedValue(mockEmployees);
-      (employeeService.update as Mock).mockResolvedValue({
+      (employeeService.getAll as jest.Mock).mockResolvedValue(mockEmployees);
+      (employeeService.update as jest.Mock).mockResolvedValue({
         id: '1',
         name: 'John Updated',
         email: 'johnupdated@example.com',
@@ -210,8 +209,8 @@ describe('Employee Management UI', () => {
         }
       ];
 
-      (employeeService.getAll as Mock).mockResolvedValue(mockEmployees);
-      (employeeService.delete as Mock).mockResolvedValue(true);
+      (employeeService.getAll as jest.Mock).mockResolvedValue(mockEmployees);
+      (employeeService.delete as jest.Mock).mockResolvedValue(true);
 
       render(<Home />);
 
@@ -221,7 +220,7 @@ describe('Employee Management UI', () => {
       });
 
       // Mock confirm dialog to return true
-      window.confirm = vi.fn(() => true);
+      window.confirm = jest.fn(() => true);
 
       // Click delete button
       fireEvent.click(screen.getByText('Delete'));
