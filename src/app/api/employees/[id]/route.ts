@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { employeeService } from '@/lib/employeeService';
 import { logApiRequest, logDatabaseOperation } from '@/lib/middleware';
-import { EmployeeType } from '@prisma/client';
 
 // Get employee by ID
 export async function GET(
@@ -44,10 +43,10 @@ export async function PUT(
     }
 
     // Validate employee type if provided
-    let validatedType: EmployeeType | undefined;
+    let validatedType: 'EMPLOYEE' | 'INVESTOR' | undefined;
     if (type) {
-      if (Object.values(EmployeeType).includes(type as EmployeeType)) {
-        validatedType = type as EmployeeType;
+      if (['EMPLOYEE', 'INVESTOR'].includes(type)) {
+        validatedType = type as 'EMPLOYEE' | 'INVESTOR';
       } else {
         await logDatabaseOperation('update-validation-error', { 
           id, 
@@ -62,7 +61,7 @@ export async function PUT(
       name: string;
       email: string;
       phone: string;
-      type: EmployeeType;
+      type: 'EMPLOYEE' | 'INVESTOR';
     }> = {};
     
     if (name) updateData.name = name;

@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { employeeService } from '@/lib/employeeService';
 import { logApiRequest, logDatabaseOperation } from '@/lib/middleware';
-import { EmployeeType } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,9 +27,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate employee type
-    const validType = type && Object.values(EmployeeType).includes(type as EmployeeType) 
-      ? type as EmployeeType 
-      : EmployeeType.INVESTOR; // Default to INVESTOR
+    const validType = type && ['EMPLOYEE', 'INVESTOR'].includes(type)
+      ? type as 'EMPLOYEE' | 'INVESTOR'
+      : 'INVESTOR'; // Default to INVESTOR
 
     const newEmployee = await employeeService.create({ 
       name, 

@@ -17,7 +17,7 @@ A Next.js application for managing employee information with comprehensive loggi
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- SQLite database (for development) or PostgreSQL (for production)
+- MongoDB Atlas database
 - npm or yarn
 
 ## Logging System
@@ -39,45 +39,19 @@ In production, logs are managed through the platform's logging system (e.g., Ver
 npm install
 ```
 
-### 2. Database Setup (SQLite - Default)
+### 2. Database Setup (MongoDB Atlas)
 
-The application is configured to use SQLite for easy local development:
+The application is configured to use MongoDB Atlas:
 
-1. The `.env` file already contains:
+1. Create an `.env.local` file with your MongoDB Atlas connection string:
    ```
-   DATABASE_URL="file:./dev.db"
-   ```
-
-2. The Prisma schema is set up for SQLite:
-   ```prisma
-   datasource db {
-     provider = "sqlite"
-     url      = env("DATABASE_URL")
-   }
+   MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority"
+   MONGODB_ENVIRONMENT="loc1"
    ```
 
-For production with PostgreSQL, update the `DATABASE_URL` in `.env`:
-```bash
-DATABASE_URL="postgresql://username:password@localhost:5432/employee_tracker"
-```
+2. The application supports environment-specific databases following the naming convention: `database_base_environment` (e.g., `business_expense_tracker_loc1`, `business_expense_tracker_prd`)
 
-And change the provider in `prisma/schema.prisma` to:
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-### 3. Run Prisma Migrations
-
-Generate and apply the database schema:
-
-```bash
-npx prisma migrate dev
-```
-
-### 4. Run the Application
+### 3. Run the Application
 
 For development:
 ```bash
@@ -90,6 +64,15 @@ npm run dev:log
 ```
 
 The application will be available at `http://localhost:3000`
+
+## Environment Configuration
+
+This application supports multiple environments using the `MONGODB_ENVIRONMENT` variable:
+
+- Local development: Set `MONGODB_ENVIRONMENT="loc1"` (or `loc2`, `loc3`, etc. for different developers)
+- Production: Set `MONGODB_ENVIRONMENT="prd"`
+
+The database name is automatically constructed as: `business_expense_tracker_{environment}`
 
 ## Log Files
 
@@ -106,8 +89,6 @@ After running the application, log files will be created in the `logs/` director
 
 ```
 ├── logs/                    # Log files (auto-generated)
-├── prisma/                  # Prisma database schema and migrations
-│   └── schema.prisma        # Database schema definition
 ├── public/                  # Static assets
 ├── src/
 │   ├── app/                 # Next.js app router pages
@@ -118,10 +99,11 @@ After running the application, log files will be created in the `logs/` director
 │   └── lib/                 # Utility functions
 │       ├── logger.ts        # Logging configuration (Winston)
 │       ├── middleware.ts    # Logging middleware
-│       ├── prisma.ts        # Database connection (Prisma client)
+│       ├── mongoClient.ts   # MongoDB connection client
 │       └── employeeService.ts # Employee operations with logging
-├── .env                     # Environment variables
-├── .env.local               # Local environment variables
+├── .env                     # Environment variables (reference for Vercel)
+├── .env.local             # Local environment variables (git-ignored)
+├── .env.example           # Example environment variables
 ├── .gitignore               # Git ignore rules
 ├── package.json             # Project dependencies and scripts
 └── README.md                # This file
@@ -138,10 +120,9 @@ After running the application, log files will be created in the `logs/` director
 
 ## Technologies Used
 
-- Next.js 14+ with App Router
+- Next.js 16 with App Router
 - TypeScript
-- Prisma ORM
-- SQLite (default) or PostgreSQL (production)
+- MongoDB Atlas
 - Tailwind CSS
 - Winston logging library
 - Node.js
@@ -154,19 +135,16 @@ After running the application, log files will be created in the `logs/` director
 
 ### Environment Variables
 
-For deployment, ensure you set the following environment variable:
+For deployment to Vercel, ensure you set the following environment variables in the Vercel dashboard:
 
-- `DATABASE_URL`: PostgreSQL connection string for production or SQLite for development
-- `DIRECT_URL` (optional): Direct database connection URL for Vercel deployments with Data Proxy
+- `MONGODB_URI`: MongoDB Atlas connection string for your production database
+- `MONGODB_ENVIRONMENT`: Set to "prd" for production environment
 
 ### Vercel Deployment Configuration
 
-This application is configured to work with Vercel deployments. For the Prisma client to work properly in Vercel's environment:
+This application is configured to work with Vercel deployments:
 
-1. The `prisma/schema.prisma` file includes the correct binary targets for Linux environments
-2. The `vercel.json` file configures the build process to include Prisma client files
-3. The `src/lib/prisma.ts` file handles different initialization for production vs development
+1. The `vercel.json` file configures the build process
+2. The `src/lib/mongoClient.ts` file handles connection pooling for optimal performance in serverless environments
 
-For production deployments with persistent data, it's recommended to use PostgreSQL instead of SQLite, as SQLite databases are not suitable for serverless functions due to the ephemeral file system.
-
-Note: For production deployments, logging configuration may need to be adjusted based on the hosting platform's file system capabilities.
+The application will connect to the database specified in your `MONGODB_URI` environment variable in production.
