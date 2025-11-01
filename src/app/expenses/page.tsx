@@ -316,7 +316,10 @@ export default function Expenses() {
   }
 
   // Get employee/investor names for display
-  const getFolioName = (folioType: string, folioId: string) => {
+  const getFolioName = (folioType: string | undefined, folioId: string | undefined) => {
+    if (!folioType || !folioId) {
+      return 'N/A';
+    }
     const entity = employees.find(emp => emp.id === folioId);
     return entity ? `${entity.name} (${entity.type})` : `${folioType} - ${folioId}`;
   };

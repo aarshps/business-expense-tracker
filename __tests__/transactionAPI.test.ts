@@ -27,16 +27,7 @@ const createMockRequest = (body: any = {}) => {
 };
 
 describe('Transaction API Routes', () => {
-  let originalEnv: NodeJS.ProcessEnv;
 
-  beforeAll(() => {
-    originalEnv = process.env;
-    process.env.NODE_ENV = 'test';
-  });
-
-  afterAll(() => {
-    process.env = originalEnv;
-  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -52,9 +43,7 @@ describe('Transaction API Routes', () => {
           description: 'Test transaction',
           transactionType: 'EXPENSE',
           folioTypeFrom: 'EMPLOYEE',
-          folioTypeTo: 'EMPLOYEE',
           folioIdFrom: '1',
-          folioIdTo: '2',
           date: now,
           createdAt: now,
           updatedAt: now,
@@ -77,9 +66,7 @@ describe('Transaction API Routes', () => {
         description: 'Test transaction',
         transactionType: 'EXPENSE',
         folioTypeFrom: 'EMPLOYEE',
-        folioTypeTo: 'EMPLOYEE',
         folioIdFrom: '1',
-        folioIdTo: '2',
       });
       expect(transactionService.getAll).toHaveBeenCalled();
     });
@@ -98,16 +85,14 @@ describe('Transaction API Routes', () => {
   });
 
   describe('POST /api/transactions', () => {
-    it('should create a new transaction', async () => {
+    it('should create a new expense transaction', async () => {
       const now = new Date();
       const newTransaction = {
         amount: 100,
-        description: 'New transaction',
+        description: 'New expense transaction',
         transactionType: 'EXPENSE',
         folioTypeFrom: 'EMPLOYEE',
-        folioTypeTo: 'EMPLOYEE',
         folioIdFrom: '1',
-        folioIdTo: '2',
         date: now,
       };
 
@@ -130,32 +115,66 @@ describe('Transaction API Routes', () => {
       expect(result).toMatchObject({
         id: '1',
         amount: 100,
-        description: 'New transaction',
+        description: 'New expense transaction',
         transactionType: 'EXPENSE',
         folioTypeFrom: 'EMPLOYEE',
-        folioTypeTo: 'EMPLOYEE',
         folioIdFrom: '1',
-        folioIdTo: '2',
       });
       expect(transactionService.create).toHaveBeenCalledWith(newTransaction);
     });
 
-    it('should return 400 for validation error', async () => {
-      // Missing required fields
-      const incompleteTransaction = {
+    it('should create a new investment transaction', async () => {
+      const now = new Date();
+      const newTransaction = {
+        amount: 1000,
+        description: 'Investment transaction',
+        transactionType: 'INVESTMENT',
+        investorId: 'investor-123',
+        date: now,
+      };
+
+      const createdTransaction = {
+        id: '2',
+        ...newTransaction,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      (transactionService.create as jest.Mock).mockResolvedValue(createdTransaction);
+
+      const { POST } = await import('@/app/api/transactions/route');
+      const request = createMockRequest(newTransaction);
+      
+      const response = await POST(request);
+
+      expect(response.status).toBe(201);
+      const result = await response.json();
+      expect(result).toMatchObject({
+        id: '2',
+        amount: 1000,
+        description: 'Investment transaction',
+        transactionType: 'INVESTMENT',
+        investorId: 'investor-123',
+      });
+      expect(transactionService.create).toHaveBeenCalledWith(newTransaction);
+    });
+
+    it('should return 400 for expense transaction missing required fields', async () => {
+      const incompleteExpense = {
         amount: 100,
         description: 'New transaction',
-        // missing transactionType, folioTypeFrom, folioTypeTo, folioIdFrom, folioIdTo
+        transactionType: 'EXPENSE',
+        // missing folioTypeFrom and folioIdFrom
       };
 
       const { POST } = await import('@/app/api/transactions/route');
-      const request = createMockRequest(incompleteTransaction);
+      const request = createMockRequest(incompleteExpense);
       
       const response = await POST(request);
 
       expect(response.status).toBe(400);
       expect(await response.json()).toEqual({ 
-        error: 'Amount, description, transactionType, folioTypeFrom, folioTypeTo, folioIdFrom, and folioIdTo are required' 
+        error: 'Amount, description, folioTypeFrom, and folioIdFrom are required for expense transactions' 
       });
     });
   });

@@ -150,15 +150,15 @@ export const transactionService = {
       // Validate transaction type business rules if transaction type or folio types are being changed
       if (data.transactionType || data.folioTypeFrom || data.folioTypeTo) {
         // Get the original transaction to merge with updates for validation
-        const existingTransaction = await this.getById(id);
+        const existingTransaction = await transactionService.getById(id);
         if (!existingTransaction) {
           throw new Error('Transaction not found for update validation');
         }
         
-        const updatedData = {
+        const updatedData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'> = {
           ...existingTransaction,
           ...data
-        } as Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>;
+        };
         
         validateTransactionRules(updatedData);
       }

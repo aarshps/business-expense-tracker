@@ -85,7 +85,7 @@ describe('Transaction Service', () => {
     });
 
     it('should apply filters when provided', async () => {
-      const mockTransactions = [];
+      const mockTransactions: any[] = [];
       mockCollection.find.mockReturnValue(mockCollection);
       mockCollection.sort.mockReturnValue(mockCollection);
       mockCollection.toArray.mockResolvedValue(mockTransactions);
