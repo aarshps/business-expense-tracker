@@ -38,6 +38,7 @@ export async function PUT(
       amount, 
       description, 
       transactionType,
+      investorId, // Add investorId
       folioTypeFrom,
       folioTypeTo,
       folioIdFrom,
