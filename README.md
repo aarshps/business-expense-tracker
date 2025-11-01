@@ -1,23 +1,24 @@
-# Business Expense Tracker - Employee Management
+# Business Expense Tracker
 
-A Next.js application for managing employee information with comprehensive logging capabilities.
-
-<!-- Updated for Vercel deployment fix -->
+A comprehensive business expense tracking application built with Next.js, MongoDB, and TypeScript. The application allows businesses to track employees, expenses, and investment flows in a single unified system.
 
 ## Features
 
-- Add new employees
-- Edit existing employees
-- Delete employees
-- View all employees in a responsive table
-- Unique IDs automatically generated for each employee
-- Form validation
-- Comprehensive logging for frontend, backend, and database operations
+- **Employee Management**: Add, edit, delete, and view employees and investors
+- **Transaction Tracking**: Support for three types of transactions:
+  - **Expenses**: Outbound business expenses from internal entities
+  - **Transfers**: Money transfers between internal entities (employees and investors)  
+  - **Investments**: Money coming into the business from investors
+- **Environment Visibility**: Clear display of which database environment the application is connected to
+- **Comprehensive Logging**: Frontend, backend, and database operation logging
+- **Responsive UI**: Mobile-friendly interface for all operations
+- **Type Safety**: Full TypeScript support with comprehensive type definitions
+- **API Integration**: RESTful API endpoints for all operations
 
 ## Prerequisites
 
 - Node.js (v18 or higher)
-- MongoDB Atlas database
+- MongoDB Atlas database or local MongoDB instance
 - npm or yarn
 
 ## Logging System
@@ -65,6 +66,15 @@ npm run dev:log
 
 The application will be available at `http://localhost:3000`
 
+## Database Environment
+
+The application displays the current database environment in the footer, showing:
+- Environment name (e.g., "loc1", "prd")
+- Database name being used
+- Node environment (development/production)
+
+This helps prevent accidentally connecting to the wrong database.
+
 ## Environment Configuration
 
 This application supports multiple environments using the `MONGODB_ENVIRONMENT` variable:
@@ -73,6 +83,23 @@ This application supports multiple environments using the `MONGODB_ENVIRONMENT` 
 - Production: Set `MONGODB_ENVIRONMENT="prd"`
 
 The database name is automatically constructed as: `business_expense_tracker_{environment}`
+
+## Transaction Types
+
+### Investment Transactions
+- **Purpose**: Money coming into the business from investors
+- **Required Fields**: Amount, description, investor ID
+- **Simplified Flow**: Only requires investor selection and amount
+
+### Expense Transactions  
+- **Purpose**: Business expenses from internal entities
+- **Required Fields**: Amount, description, source entity (employee/investor)
+- **Optional Fields**: Destination information (typically external)
+
+### Transfer Transactions
+- **Purpose**: Money transfers between internal entities
+- **Required Fields**: Amount, description, source entity, destination entity
+- **Validation**: Both source and destination must be internal (employee/investor)
 
 ## Log Files
 
@@ -94,13 +121,22 @@ After running the application, log files will be created in the `logs/` director
 │   ├── app/                 # Next.js app router pages
 │   │   ├── api/             # API routes
 │   │   │   ├── employees/   # Employee management API routes
+│   │   │   ├── transactions/ # Transaction management API routes
+│   │   │   ├── environment/  # Environment info API route
 │   │   │   └── logs/        # Logging API routes
-│   │   └── page.tsx         # Main application page
+│   │   ├── expenses/        # Expenses page
+│   │   └── page.tsx         # Main application page (employees)
+│   ├── components/          # Reusable React components
+│   │   └── EnvironmentFooter.tsx # Environment info footer
 │   └── lib/                 # Utility functions
+│       ├── types/           # Type definitions
+│       │   ├── employee.ts  # Employee type definition
+│       │   └── transaction.ts # Transaction type definition
 │       ├── logger.ts        # Logging configuration (Winston)
 │       ├── middleware.ts    # Logging middleware
 │       ├── mongoClient.ts   # MongoDB connection client
-│       └── employeeService.ts # Employee operations with logging
+│       ├── employeeService.ts # Employee operations with logging
+│       └── transactionService.ts # Transaction operations with validation
 ├── .env                     # Environment variables (reference for Vercel)
 ├── .env.local             # Local environment variables (git-ignored)
 ├── .env.example           # Example environment variables
@@ -116,16 +152,25 @@ After running the application, log files will be created in the `logs/` director
 - `GET /api/employees/[id]` - Get a specific employee
 - `PUT /api/employees/[id]` - Update a specific employee
 - `DELETE /api/employees/[id]` - Delete a specific employee
+
+- `GET /api/transactions` - Get all transactions
+- `POST /api/transactions` - Create a new transaction
+- `GET /api/transactions/[id]` - Get a specific transaction
+- `PUT /api/transactions/[id]` - Update a specific transaction
+- `DELETE /api/transactions/[id]` - Delete a specific transaction
+
+- `GET /api/environment` - Get current environment information
 - `POST /api/logs` - Frontend log collection endpoint
 
 ## Technologies Used
 
 - Next.js 16 with App Router
-- TypeScript
-- MongoDB Atlas
-- Tailwind CSS
+- TypeScript with comprehensive type safety
+- MongoDB Atlas with environment-specific databases
+- Tailwind CSS for styling
 - Winston logging library
-- Node.js
+- Jest for testing
+- React for frontend components
 
 ## Deployment
 
@@ -148,3 +193,22 @@ This application is configured to work with Vercel deployments:
 2. The `src/lib/mongoClient.ts` file handles connection pooling for optimal performance in serverless environments
 
 The application will connect to the database specified in your `MONGODB_URI` environment variable in production.
+
+## Architecture
+
+The application follows a clean architecture with:
+- Separated type definitions from service implementations to prevent MongoDB imports in client-side code
+- Dedicated API routes for backend operations
+- Type-safe React components for the frontend
+- Comprehensive validation for different transaction types
+- Environment awareness with visible database connection details
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`npm test`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a pull request
