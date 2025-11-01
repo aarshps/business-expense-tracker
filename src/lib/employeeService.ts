@@ -12,11 +12,14 @@ export type Employee = {
   updatedAt: Date;
 };
 
+// Define MongoDB document type with _id
+type EmployeeDocument = Omit<Employee, 'id'> & { _id: ObjectId };
+
 // Get the employees collection
-const getEmployeesCollection = async (): Promise<Collection<Employee>> => {
+const getEmployeesCollection = async (): Promise<Collection<EmployeeDocument>> => {
   const client = await clientPromise;
   // The database name is already part of the connection string
-  return client.db().collection<Employee>('employees');
+  return client.db().collection<EmployeeDocument>('employees');
 };
 
 export const employeeService = {
@@ -27,7 +30,11 @@ export const employeeService = {
     const employees = await collection.find({}).sort({ createdAt: -1 }).toArray();
     
     // Convert _id to id for consistency
-    return employees.map(emp => ({ ...emp, id: emp._id.toString() }));
+    return employees.map(emp => ({ 
+      ...emp, 
+      id: emp._id.toString(),
+      _id: undefined as any // Remove _id from final result to match Employee type
+    }));
   },
 
   // Get employee by ID
@@ -38,14 +45,18 @@ export const employeeService = {
     
     if (!employee) return null;
     
-    return { ...employee, id: employee._id.toString() };
+    return { 
+      ...employee, 
+      id: employee._id.toString(),
+      _id: undefined as any // Remove _id from final result to match Employee type
+    };
   },
 
   // Create new employee
   create: async (data: Omit<Employee, 'id' | 'createdAt' | 'updatedAt'>): Promise<Employee> => {
     await logDatabaseOperation('create', { model: 'Employee', data });
     const collection = await getEmployeesCollection();
-    const newEmployee = {
+    const newEmployee: EmployeeDocument = {
       _id: new ObjectId(),
       ...data,
       createdAt: new Date(),
@@ -54,7 +65,11 @@ export const employeeService = {
     
     await collection.insertOne(newEmployee);
     
-    return { ...newEmployee, id: newEmployee._id.toString() };
+    return { 
+      ...newEmployee, 
+      id: newEmployee._id.toString(),
+      _id: undefined as any // Remove _id from final result to match Employee type
+    };
   },
 
   // Update employee
@@ -78,7 +93,11 @@ export const employeeService = {
         return null;
       }
       
-      return { ...result, id: result._id.toString() };
+      return { 
+        ...result, 
+        id: result._id.toString(),
+        _id: undefined as any // Remove _id from final result to match Employee type
+      };
     } catch (error) {
       // If employee doesn't exist, return null
       await logDatabaseOperation('update-error', { model: 'Employee', id, error: (error as Error).message });
