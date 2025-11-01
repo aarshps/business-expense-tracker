@@ -30,11 +30,13 @@ export const employeeService = {
     const employees = await collection.find({}).sort({ createdAt: -1 }).toArray();
     
     // Convert _id to id for consistency
-    return employees.map(emp => ({ 
-      ...emp, 
-      id: emp._id.toString(),
-      _id: undefined as any // Remove _id from final result to match Employee type
-    }));
+    return employees.map(emp => {
+      const { _id, ...employeeWithoutId } = emp;
+      return {
+        ...employeeWithoutId,
+        id: _id.toString()
+      };
+    });
   },
 
   // Get employee by ID
@@ -45,10 +47,10 @@ export const employeeService = {
     
     if (!employee) return null;
     
-    return { 
-      ...employee, 
-      id: employee._id.toString(),
-      _id: undefined as any // Remove _id from final result to match Employee type
+    const { _id, ...employeeWithoutId } = employee;
+    return {
+      ...employeeWithoutId,
+      id: _id.toString()
     };
   },
 
@@ -65,10 +67,10 @@ export const employeeService = {
     
     await collection.insertOne(newEmployee);
     
-    return { 
-      ...newEmployee, 
-      id: newEmployee._id.toString(),
-      _id: undefined as any // Remove _id from final result to match Employee type
+    const { _id, ...employeeWithoutId } = newEmployee;
+    return {
+      ...employeeWithoutId,
+      id: _id.toString()
     };
   },
 
@@ -93,10 +95,10 @@ export const employeeService = {
         return null;
       }
       
-      return { 
-        ...result, 
-        id: result._id.toString(),
-        _id: undefined as any // Remove _id from final result to match Employee type
+      const { _id, ...employeeWithoutId } = result;
+      return {
+        ...employeeWithoutId,
+        id: _id.toString()
       };
     } catch (error) {
       // If employee doesn't exist, return null
