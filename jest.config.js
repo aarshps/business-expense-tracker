@@ -1,21 +1,26 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['/node_modules/'],
+  testEnvironment: 'node',
+  roots: ['<rootDir>'],
+  modulePaths: ['<rootDir>'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.json',
+      },
+    ],
+  },
+  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
   collectCoverageFrom: [
-    'src/**/*.{js,jsx,ts,tsx}',
-    '!src/generated/**/*',
-    '!src/**/node_modules/**/*',
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/types.ts',
   ],
-  coverageThreshold: {
-    global: {
-      branches: 0,
-      functions: 0,
-      lines: 0,
-      statements: 0
-    }
-  }
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/(?!(mongodb|bson|bson-ext|kerberos)/)',
+  ],
 };

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Employee } from '@/lib/employeeService';
+import { Employee } from '@/lib/types/employee';
 
 type FormState = 'view' | 'create' | 'edit';
 

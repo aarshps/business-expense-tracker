@@ -1,16 +1,7 @@
 import { Collection, ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongoClient';
 import { logDatabaseOperation } from './middleware';
-
-export type Employee = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  type: 'EMPLOYEE' | 'INVESTOR';
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { Employee } from './types/employee';
 
 // Define MongoDB document type with _id
 type EmployeeDocument = Omit<Employee, 'id'> & { _id: ObjectId };
