@@ -156,7 +156,7 @@ export default function Expenses() {
       folioTypeTo: transaction.folioTypeTo || 'EMPLOYEE',
       folioIdFrom: transaction.folioIdFrom || '',
       folioIdTo: transaction.folioIdTo || '',
-      date: transaction.date.toISOString().split('T')[0]
+      date: new Date(transaction.date).toISOString().split('T')[0]
     });
   };
 
@@ -309,8 +309,8 @@ export default function Expenses() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-2xl">Loading expenses...</div>
+      <div className="flex-grow flex items-center justify-center bg-gray-50">
+        <div className="text-2xl">Loading Transactions...</div>
       </div>
     );
   }
@@ -325,11 +325,11 @@ export default function Expenses() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="bg-gray-50 py-8 flex-grow">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">Expense Transactions</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Transactions</h1>
             {formState === 'view' && (
               <button
                 onClick={handleCreate}
@@ -346,6 +346,24 @@ export default function Expenses() {
                 {formState === 'create' ? 'Add New Transaction' : 'Edit Transaction'}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Transaction Type at the top */}
+                <div>
+                  <label htmlFor="transactionType" className="block text-sm font-medium text-gray-700 mb-1">
+                    Transaction Type *
+                  </label>
+                  <select
+                    id="transactionType"
+                    name="transactionType"
+                    value={formData.transactionType}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                  >
+                    <option value="EXPENSE">Expense</option>
+                    <option value="TRANSFER">Transfer</option>
+                    <option value="INVESTMENT">Investment</option>
+                  </select>
+                </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
@@ -394,53 +412,37 @@ export default function Expenses() {
                     placeholder="Enter description"
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                {/* Investor field for investment transactions */}
+                {formData.transactionType === 'INVESTMENT' && (
                   <div>
-                    <label htmlFor="transactionType" className="block text-sm font-medium text-gray-700 mb-1">
-                      Transaction Type *
+                    <label htmlFor="investorId" className="block text-sm font-medium text-gray-700 mb-1">
+                      Investor *
                     </label>
                     <select
-                      id="transactionType"
-                      name="transactionType"
-                      value={formData.transactionType}
+                      id="investorId"
+                      name="investorId"
+                      value={formData.investorId}
                       onChange={handleChange}
+                      required={formData.transactionType === 'INVESTMENT'}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                     >
-                      <option value="EXPENSE">Expense</option>
-                      <option value="TRANSFER">Transfer</option>
-                      <option value="INVESTMENT">Investment</option>
+                      <option value="">Select investor</option>
+                      {employees
+                        .filter(emp => emp.type === 'INVESTOR')
+                        .map(emp => (
+                          <option key={emp.id} value={emp.id}>
+                            {emp.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
-                  
-                  {/* Investor field for investment transactions */}
-                  {formData.transactionType === 'INVESTMENT' && (
-                    <div className="md:col-span-2">
-                      <label htmlFor="investorId" className="block text-sm font-medium text-gray-700 mb-1">
-                        Investor *
-                      </label>
-                      <select
-                        id="investorId"
-                        name="investorId"
-                        value={formData.investorId}
-                        onChange={handleChange}
-                        required={formData.transactionType === 'INVESTMENT'}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                      >
-                        <option value="">Select investor</option>
-                        {employees
-                          .filter(emp => emp.type === 'INVESTOR')
-                          .map(emp => (
-                            <option key={emp.id} value={emp.id}>
-                              {emp.name}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  )}
-                  
-                  {/* From/To fields for expense and transfer transactions */}
-                  {formData.transactionType !== 'INVESTMENT' && (
-                    <>
+                )}
+                
+                {/* From/To fields for expense and transfer transactions */}
+                {formData.transactionType !== 'INVESTMENT' && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="folioTypeFrom" className="block text-sm font-medium text-gray-700 mb-1">
                           From Type *
@@ -471,58 +473,56 @@ export default function Expenses() {
                           <option value="INVESTOR">Investor</option>
                         </select>
                       </div>
-                    </>
-                  )}
-                </div>
-                
-                {/* From/To entity fields for expense and transfer transactions */}
-                {formData.transactionType !== 'INVESTMENT' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="folioIdFrom" className="block text-sm font-medium text-gray-700 mb-1">
-                        From *
-                      </label>
-                      <select
-                        id="folioIdFrom"
-                        name="folioIdFrom"
-                        value={formData.folioIdFrom}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                      >
-                        <option value="">Select entity</option>
-                        {employees
-                          .filter(emp => emp.type === formData.folioTypeFrom)
-                          .map(emp => (
-                            <option key={emp.id} value={emp.id}>
-                              {emp.name} ({emp.type})
-                            </option>
-                          ))}
-                      </select>
                     </div>
-                    <div>
-                      <label htmlFor="folioIdTo" className="block text-sm font-medium text-gray-700 mb-1">
-                        To *
-                      </label>
-                      <select
-                        id="folioIdTo"
-                        name="folioIdTo"
-                        value={formData.folioIdTo}
-                        onChange={handleChange}
-                        required={formData.transactionType === 'TRANSFER'}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
-                      >
-                        <option value="">Select entity</option>
-                        {employees
-                          .filter(emp => emp.type === formData.folioTypeTo)
-                          .map(emp => (
-                            <option key={emp.id} value={emp.id}>
-                              {emp.name} ({emp.type})
-                            </option>
-                          ))}
-                      </select>
+                    
+                    {/* From/To entity fields for expense and transfer transactions */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="folioIdFrom" className="block text-sm font-medium text-gray-700 mb-1">
+                          From *
+                        </label>
+                        <select
+                          id="folioIdFrom"
+                          name="folioIdFrom"
+                          value={formData.folioIdFrom}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                        >
+                          <option value="">Select entity</option>
+                          {employees
+                            .filter(emp => emp.type === formData.folioTypeFrom)
+                            .map(emp => (
+                              <option key={emp.id} value={emp.id}>
+                                {emp.name} ({emp.type})
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="folioIdTo" className="block text-sm font-medium text-gray-700 mb-1">
+                          To *
+                        </label>
+                        <select
+                          id="folioIdTo"
+                          name="folioIdTo"
+                          value={formData.folioIdTo}
+                          onChange={handleChange}
+                          required={formData.transactionType === 'TRANSFER'}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                        >
+                          <option value="">Select entity</option>
+                          {employees
+                            .filter(emp => emp.type === formData.folioTypeTo)
+                            .map(emp => (
+                              <option key={emp.id} value={emp.id}>
+                                {emp.name} ({emp.type})
+                              </option>
+                            ))}
+                        </select>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
                 <div className="flex space-x-3 pt-2">
                   <button
@@ -617,7 +617,7 @@ export default function Expenses() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
-                              ${transaction.amount.toFixed(2)}
+                              ₹{transaction.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

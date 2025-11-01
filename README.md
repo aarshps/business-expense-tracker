@@ -124,7 +124,7 @@ After running the application, log files will be created in the `logs/` director
 │   │   │   ├── transactions/ # Transaction management API routes
 │   │   │   ├── environment/  # Environment info API route
 │   │   │   └── logs/        # Logging API routes
-│   │   ├── expenses/        # Expenses page
+│   │   ├── transactions/        # Transactions page
 │   │   └── page.tsx         # Main application page (employees)
 │   ├── components/          # Reusable React components
 │   │   └── EnvironmentFooter.tsx # Environment info footer
