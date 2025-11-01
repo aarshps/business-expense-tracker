@@ -28,6 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-gray-100`}
       >
+        <header className="bg-gray-800 text-white py-4 text-center border-b border-gray-700">
+          <h1 className="text-xl font-bold">Business Expense Tracker</h1>
+        </header>
         <main className="flex-grow">
           {children}
         </main>

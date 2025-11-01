@@ -4,6 +4,7 @@ A business expense tracking application built with Next.js, MongoDB, and TypeScr
 
 ## Features
 
+- **Consistent UI**: Header and footer with matching color schemes
 - **Environment Visibility**: Display of which database environment the application is connected to
 - **Version Display**: Current application version shown in footer
 - **Logging System**: API request, database, and frontend event logging
