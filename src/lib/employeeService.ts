@@ -18,7 +18,7 @@ type EmployeeDocument = Omit<Employee, 'id'> & { _id: ObjectId };
 // Get the employees collection
 const getEmployeesCollection = async (): Promise<Collection<EmployeeDocument>> => {
   const client = await clientPromise;
-  // The database name is already part of the connection string
+  // The database name is determined by MONGODB_ENVIRONMENT and set in mongoClient.ts
   return client.db().collection<EmployeeDocument>('employees');
 };
 

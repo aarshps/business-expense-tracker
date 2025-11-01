@@ -10,15 +10,23 @@ let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 const mongoUri = process.env.MONGODB_URI || '';
+const environment = process.env.MONGODB_ENVIRONMENT || 'loc1';
 
 if (!mongoUri) {
   throw new Error('MongoDB URI must be defined in environment variables: MONGODB_URI');
 }
 
+// Construct the database name based on environment
+const databaseBase = 'business_expense_tracker';
+const databaseName = `${databaseBase}_${environment}`;
+
+// Modify the connection string to include the database name
+const modifiedMongoUri = mongoUri.replace(/\/[^\/?]*(\?|$)/, `/${databaseName}$1`);
+
 // In development mode, use a global variable to preserve the connection across hot reloads
 if (process.env.NODE_ENV === 'development') {
   if (!global.mongoClient) {
-    global.mongoClient = new MongoClient(mongoUri, {
+    global.mongoClient = new MongoClient(modifiedMongoUri, {
       serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -28,7 +36,7 @@ if (process.env.NODE_ENV === 'development') {
   }
   client = global.mongoClient;
 } else {
-  client = new MongoClient(mongoUri, {
+  client = new MongoClient(modifiedMongoUri, {
     serverApi: {
       version: ServerApiVersion.v1,
       strict: true,
@@ -38,9 +46,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 clientPromise = client.connect().then(async (client) => {
-  const environment = process.env.MONGODB_ENVIRONMENT || 'loc1';
   await logDatabaseOperation('connect', { 
     message: 'MongoDB connection established', 
+    database: databaseName,
     environment: environment
   });
   return client;
