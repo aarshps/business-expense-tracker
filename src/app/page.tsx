@@ -218,9 +218,6 @@ export default function Home() {
           <div className="p-4 border-t bg-gray-100">
             <div className="flex justify-between">
               <div>
-                <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2">
-                  Export to Excel
-                </button>
                 <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                   Save Changes
                 </button>
