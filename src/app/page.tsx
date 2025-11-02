@@ -254,7 +254,10 @@ export default function Home() {
           <div className="p-4 border-t bg-gray-100">
             <div className="flex justify-between">
               <div>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                <button 
+                  onClick={() => alert('Changes saved successfully!')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
                   Save Changes
                 </button>
               </div>
