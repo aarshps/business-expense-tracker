@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id || session.user.email;
-    const { fromNodeId, toNodeId, amount, description, category } = await request.json();
+    const { fromNodeId, toNodeId, amount, description } = await request.json();
 
     if (!fromNodeId || !toNodeId || !amount) {
       return new Response(
@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
       toNodeId,
       amount: parseFloat(amount),
       description: description || '',
-      category: category || '',
       userId,
       date: new Date(),
       status: 'completed'
