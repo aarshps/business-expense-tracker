@@ -259,9 +259,27 @@ export default function Home() {
             <div className="flex justify-between">
               <div>
                 <button 
-                  onClick={() => {
-                    alert('Changes saved successfully!');
-                    setHasChanges(false); // Reset the changes state after saving
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/expenses', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ expenses }),
+                      });
+
+                      if (response.ok) {
+                        alert('Changes saved successfully!');
+                        setHasChanges(false); // Reset the changes state after saving
+                      } else {
+                        const data = await response.json();
+                        alert(`Error saving changes: ${data.message}`);
+                      }
+                    } catch (error) {
+                      console.error('Error saving expenses:', error);
+                      alert('Error saving changes. Please try again.');
+                    }
                   }}
                   disabled={!hasChanges}
                   className={`px-4 py-2 rounded-md ${
