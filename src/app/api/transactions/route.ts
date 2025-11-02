@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     if (!session || !session.user) {
       return new Response(
         JSON.stringify({ message: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' }
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
