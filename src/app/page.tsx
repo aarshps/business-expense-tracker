@@ -97,13 +97,13 @@ export default function Home() {
     <div className="flex-grow p-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-800">Expense Tracker Dashboard</h1>
-          <p className="text-gray-600">Welcome, {session.user.name}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Expense Tracker Dashboard</h1>
+          <p className="text-gray-800">Welcome, {session.user.name}</p>
         </div>
         
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="flex justify-between items-center p-4 border-b">
-            <h2 className="text-xl font-semibold">Expenses</h2>
+          <div className="flex justify-between items-center p-4 border-b bg-gray-100">
+            <h2 className="text-xl font-semibold text-gray-900">Expenses</h2>
             <button 
               onClick={addRow}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -215,7 +215,7 @@ export default function Home() {
             </table>
           </div>
           
-          <div className="p-4 border-t bg-gray-50">
+          <div className="p-4 border-t bg-gray-100">
             <div className="flex justify-between">
               <div>
                 <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 mr-2">
@@ -225,9 +225,9 @@ export default function Home() {
                   Save Changes
                 </button>
               </div>
-              <div>
-                <span className="text-gray-600">Total Expenses: </span>
-                <span className="font-semibold">
+              <div className="font-medium text-gray-800">
+                <span>Total Expenses: </span>
+                <span className="font-bold text-gray-900">
                   ${expenses.reduce((sum, expense) => sum + (parseFloat(expense.amount) || 0), 0).toFixed(2)}
                 </span>
               </div>
