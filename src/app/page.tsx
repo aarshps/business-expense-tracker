@@ -1,9 +1,12 @@
+import ThemeToggle from '@/components/ThemeToggle';
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="py-6 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white">Business Expense Tracker</h1>
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Business Expense Tracker</h1>
+          <ThemeToggle />
         </div>
       </header>
       
