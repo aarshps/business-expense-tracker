@@ -9,6 +9,8 @@ type Transaction = {
   date: string;
   description: string;
   category: string;
+  from: string;
+  to: string;
   amount: string;
   status: string;
 };
@@ -33,6 +35,8 @@ export default function Home() {
               date: transaction.date,
               description: transaction.description,
               category: transaction.category,
+              from: transaction.from,
+              to: transaction.to,
               amount: transaction.amount,
               status: transaction.status,
             }));
@@ -57,10 +61,41 @@ export default function Home() {
       date: '',
       description: '',
       category: '',
+      from: '',
+      to: '',
       amount: '',
       status: 'Pending',
     };
     setTransactions([...transactions, newRow]);
+    setHasChanges(true);
+  };
+
+  // Update cell value
+  const updateCell = (rowIndex: number, field: keyof Transaction, value: string) => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[rowIndex] = { ...updatedTransactions[rowIndex], [field]: value };
+    
+    // Set default values based on category
+    if (field === 'category') {
+      switch (value) {
+        case 'Expense':
+          updatedTransactions[rowIndex].from = 'Business';
+          updatedTransactions[rowIndex].to = '';
+          break;
+        case 'Investment':
+          updatedTransactions[rowIndex].from = '';
+          updatedTransactions[rowIndex].to = 'Business';
+          break;
+        case 'Income':
+          updatedTransactions[rowIndex].from = '';
+          updatedTransactions[rowIndex].to = 'Business';
+          break;
+        default:
+          break;
+      }
+    }
+    
+    setTransactions(updatedTransactions);
     setHasChanges(true);
   };
 
@@ -198,8 +233,10 @@ export default function Home() {
                     />
                   </th>
                   <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Date</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-64">Description</th>
-                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-40">Category</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-40">Description</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Category</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">From</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">To</th>
                   <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Amount (₹)</th>
                   <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Status</th>
                 </tr>
@@ -207,7 +244,7 @@ export default function Home() {
               <tbody>
                 {transactions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
+                    <td colSpan={8} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
                       No transactions added yet. Click "Add Transaction" to get started.
                     </td>
                   </tr>
@@ -228,22 +265,22 @@ export default function Home() {
                       <td className="border border-gray-300 px-4 py-2 w-32">
                         <input
                           type="date"
-                          value={expense.date}
+                          value={transaction.date}
                           onChange={(e) => updateCell(rowIndex, 'date', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2 w-64">
+                      <td className="border border-gray-300 px-4 py-2 w-40">
                         <input
                           type="text"
-                          value={expense.description}
+                          value={transaction.description}
                           onChange={(e) => updateCell(rowIndex, 'description', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2 w-40">
+                      <td className="border border-gray-300 px-4 py-2 w-32">
                         <select
-                          value={expense.category}
+                          value={transaction.category}
                           onChange={(e) => updateCell(rowIndex, 'category', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
                         >
@@ -254,9 +291,37 @@ export default function Home() {
                         </select>
                       </td>
                       <td className="border border-gray-300 px-4 py-2 w-32">
+                        <select
+                          value={transaction.from}
+                          onChange={(e) => updateCell(rowIndex, 'from', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
+                        >
+                          <option value="">Select</option>
+                          <option value="Anup">Anup</option>
+                          <option value="Aneshwar">Aneshwar</option>
+                          <option value="Ramappan">Ramappan</option>
+                          <option value="Aarsh">Aarsh</option>
+                          <option value="Business">Business</option>
+                        </select>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-32">
+                        <select
+                          value={transaction.to}
+                          onChange={(e) => updateCell(rowIndex, 'to', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
+                        >
+                          <option value="">Select</option>
+                          <option value="Anup">Anup</option>
+                          <option value="Aneshwar">Aneshwar</option>
+                          <option value="Ramappan">Ramappan</option>
+                          <option value="Aarsh">Aarsh</option>
+                          <option value="Business">Business</option>
+                        </select>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-32">
                         <input
                           type="number"
-                          value={expense.amount}
+                          value={transaction.amount}
                           onChange={(e) => updateCell(rowIndex, 'amount', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                           placeholder="0.00"
@@ -266,7 +331,7 @@ export default function Home() {
                       </td>
                       <td className="border border-gray-300 px-4 py-2 w-32">
                         <select
-                          value={expense.status}
+                          value={transaction.status}
                           onChange={(e) => updateCell(rowIndex, 'status', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
                         >

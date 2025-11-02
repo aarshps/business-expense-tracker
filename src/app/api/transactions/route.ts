@@ -9,6 +9,8 @@ const transactionSchema = new mongoose.Schema({
   date: String,
   description: String,
   category: String,
+  from: String,
+  to: String,
   amount: String,
   status: String,
   environment: String,
