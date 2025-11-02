@@ -1,7 +1,13 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 
-const handler = NextAuth({
+// Configuration using the NextAuth v5 (experimental) syntax
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+} = NextAuth({
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -41,5 +47,3 @@ const handler = NextAuth({
   // Add debug logging in development
   debug: process.env.NODE_ENV === "development",
 });
-
-export const { GET, POST } = handler;
