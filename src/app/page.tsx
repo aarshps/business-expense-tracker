@@ -168,6 +168,7 @@ export default function Home() {
                           <option value="Office Supplies">Office Supplies</option>
                           <option value="Software">Software</option>
                           <option value="Marketing">Marketing</option>
+                          <option value="Investment">Investment</option>
                           <option value="Other">Other</option>
                         </select>
                       </td>
