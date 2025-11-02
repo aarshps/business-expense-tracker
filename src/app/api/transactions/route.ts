@@ -38,20 +38,6 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id || session.user.email;
     const { transactions } = await request.json();
 
-    console.log('=== DEBUGGING TRANSACTION SAVE ===');
-    console.log('User ID:', userId);
-    console.log('Raw transactions data:', JSON.stringify(transactions, null, 2));
-    
-    // Check if from/to fields exist in the first transaction
-    if (transactions && transactions.length > 0) {
-      const firstTx = transactions[0];
-      console.log('First transaction keys:', Object.keys(firstTx));
-      console.log('First transaction from field:', firstTx.from);
-      console.log('First transaction to field:', firstTx.to);
-      console.log('typeof from:', typeof firstTx.from);
-      console.log('typeof to:', typeof firstTx.to);
-    }
-
     if (!userId || !transactions) {
       return new Response(
         JSON.stringify({ message: 'Missing required fields' }),
@@ -65,19 +51,14 @@ export async function POST(request: NextRequest) {
     await Transaction.deleteMany({ userId });
 
     // Insert new transactions
-    const transactionDocs = transactions.map((transaction: any) => {
-      const doc = {
-        ...transaction,
-        userId,
-        createdAt: new Date(), // Use current date instead of default
-      };
-      console.log('Prepared document:', JSON.stringify(doc, null, 2));
-      return doc;
-    });
+    const transactionDocs = transactions.map((transaction: any) => ({
+      ...transaction,
+      userId,
+      createdAt: new Date(),
+    }));
 
     if (transactionDocs.length > 0) {
-      const result = await Transaction.insertMany(transactionDocs);
-      console.log('Saved documents result:', result);
+      await Transaction.insertMany(transactionDocs);
     }
 
     return new Response(
