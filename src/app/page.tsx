@@ -6,8 +6,6 @@ import { AgGridReact } from 'ag-grid-react';
 import { ModuleRegistry } from '@ag-grid-community/core';
 import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
 import { CsvExportModule } from '@ag-grid-community/csv-export';
-import { FiltersToolPanelModule } from '@ag-grid-enterprise/filter-tool-panel';
-import { SetFilterModule } from '@ag-grid-enterprise/set-filter';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
@@ -15,8 +13,6 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 ModuleRegistry.registerModules([
   ClientSideRowModelModule,
   CsvExportModule,
-  FiltersToolPanelModule,
-  SetFilterModule,
 ]);
 
 // Define the structure for expense data
@@ -62,14 +58,14 @@ export default function Home() {
       editable: true,
       cellEditor: 'agDateCellEditor',
       width: 150,
-      filter: 'agDateColumnFilter',
+      filter: true,
     },
     {
       headerName: 'Description',
       field: 'description',
       editable: true,
       width: 250,
-      filter: 'agTextColumnFilter',
+      filter: true,
     },
     {
       headerName: 'Category',
@@ -80,7 +76,7 @@ export default function Home() {
         values: ['Travel', 'Meals', 'Office Supplies', 'Software', 'Marketing', 'Investment', 'Other'],
       },
       width: 150,
-      filter: 'agSetColumnFilter',
+      filter: true,
     },
     {
       headerName: 'Amount',
@@ -89,7 +85,7 @@ export default function Home() {
       cellEditor: 'agNumberCellEditor',
       valueFormatter: (params) => `₹${params.value || '0.00'}`,
       width: 120,
-      filter: 'agNumberColumnFilter',
+      filter: true,
     },
     {
       headerName: 'Status',
@@ -100,7 +96,7 @@ export default function Home() {
         values: ['Pending', 'Approved', 'Rejected'],
       },
       width: 120,
-      filter: 'agSetColumnFilter',
+      filter: true,
     },
   ], []);
 
