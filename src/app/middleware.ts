@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logApiRequest } from '@/lib/middleware';
 
 export async function middleware(request: NextRequest) {
+  // Skip middleware for NextAuth API routes to avoid conflicts
+  if (request.nextUrl.pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
+  
   // Log the incoming request
   await logApiRequest(request);
 
@@ -9,15 +14,12 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply middleware to API routes
+// Apply middleware to API routes, excluding NextAuth routes
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match all API routes except NextAuth routes
      */
-    '/api/:path*',
+    '/api((?!/auth).*)',
   ],
 };

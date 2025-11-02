@@ -1,6 +1,6 @@
 # Business Expense Tracker
 
-A business expense tracking application built with Next.js, MongoDB, and TypeScript.
+A business expense tracking application built with Next.js, MongoDB, and TypeScript featuring Google Authentication.
 
 ## Features
 
@@ -9,6 +9,9 @@ A business expense tracking application built with Next.js, MongoDB, and TypeScr
 - **Version Display**: Current application version shown in footer
 - **Logging System**: API request, database, and frontend event logging
 - **Environment Support**: Multiple environment configuration for development and production
+- **Google Authentication**: Secure login using Google OAuth
+- **Protected Routes**: Access control for authenticated users
+- **User Profile Integration**: Access to Google profile information
 
 ## Prerequisites
 
@@ -35,15 +38,42 @@ Logs are automatically rotated when they reach 20MB in development, keeping up t
 npm install
 ```
 
-### 2. Database Setup (MongoDB Atlas)
+### 2. Environment Setup
 
-The application is configured to use MongoDB Atlas:
+Create an `.env.local` file with the following variables:
 
-1. Create an `.env.local` file with your MongoDB Atlas connection string:
-   ```
-   MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority"
-   MONGODB_ENV="loc1"
-   ```
+```
+# MongoDB connection
+MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority"
+MONGODB_ENV="loc1"
+
+# Google OAuth credentials (get these from Google Cloud Console)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+
+# NextAuth secret (generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+NEXTAUTH_SECRET="your-generated-secret"
+
+# NextAuth base URL
+NEXTAUTH_URL="http://localhost:3000"
+
+# Optional logging level
+LOG_LEVEL="info"
+```
+
+### 3. Google OAuth Configuration
+
+To set up Google OAuth:
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
+4. Create OAuth 2.0 credentials
+5. Add authorized redirect URIs: 
+   - `http://localhost:3000/api/auth/callback/google` (for local development)
+   - `https://your-app-name.vercel.app/api/auth/callback/google` (for Vercel deployment)
+6. Add authorized JavaScript origins: 
+   - `http://localhost:3000` (for local development)
+   - `https://your-app-name.vercel.app` (for Vercel deployment)
 
 ### 3. Run the Application
 
@@ -85,11 +115,22 @@ After running the application, log files will be created in the `logs/` director
 ├── src/
 │   ├── app/                 # Next.js app router pages
 │   │   ├── api/             # API routes
+│   │   │   ├── auth/        # NextAuth API routes
 │   │   │   └── env-info/    # Environment info API route
+│   │   ├── auth/            # Authentication pages
+│   │   │   └── signin/      # Sign in page
+│   │   ├── dashboard/       # Protected dashboard page
 │   │   └── page.tsx         # Main application page
 │   ├── components/          # Reusable React components
+│   │   ├── AuthProvider.tsx # Authentication context provider
+│   │   ├── Header.tsx       # Header with login button
+│   │   ├── LoginButton.tsx  # Google login/logout component
+│   │   ├── ProtectedContent.tsx # Component for protected content
 │   │   └── AppFooter.tsx    # Footer component
 │   └── lib/                 # Utility functions
+│       ├── auth.ts          # NextAuth configuration
+│       ├── auth-client.ts   # Client-side auth utilities
+│       ├── db.ts            # Database connection utilities
 │       └── middleware.ts    # Logging middleware
 ├── .env                     # Environment variables (reference for Vercel)
 ├── .env.example           # Example environment variables
@@ -109,9 +150,12 @@ After running the application, log files will be created in the `logs/` director
 - Next.js 16 with App Router
 - TypeScript
 - MongoDB Atlas
+- NextAuth.js for authentication
+- @auth/mongodb-adapter for session storage
 - Winston logging library
 - Jest for testing
 - React for frontend components
+- Lucide React for icons
 
 ## Middleware
 
@@ -129,6 +173,11 @@ For deployment to Vercel, ensure you set the following environment variables in 
 
 - `MONGODB_URI`: MongoDB Atlas connection string for your production database
 - `MONGODB_ENV`: Set to your environment identifier (e.g., "prd" for production)
+- `GOOGLE_CLIENT_ID`: Your Google OAuth client ID
+- `GOOGLE_CLIENT_SECRET`: Your Google OAuth client secret
+- `NEXTAUTH_SECRET`: Your NextAuth secret (generate with: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+- `NEXTAUTH_URL`: Your production URL (e.g., `https://your-app-name.vercel.app`)
+- `LOG_LEVEL`: Optional logging level (info, verbose, debug, error)
 
 ## Contributing
 
