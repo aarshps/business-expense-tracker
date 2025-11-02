@@ -3,8 +3,21 @@
 import { useSession } from 'next-auth/react';
 import { useState, useCallback, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
+import { ModuleRegistry } from '@ag-grid-community/core';
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { CsvExportModule } from '@ag-grid-community/csv-export';
+import { FiltersToolPanelModule } from '@ag-grid-enterprise/filter-tool-panel';
+import { SetFilterModule } from '@ag-grid-enterprise/set-filter';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+// Register modules
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  CsvExportModule,
+  FiltersToolPanelModule,
+  SetFilterModule,
+]);
 
 // Define the structure for expense data
 type Expense = {
@@ -47,7 +60,7 @@ export default function Home() {
       headerName: 'Date',
       field: 'date',
       editable: true,
-      cellEditor: 'datePicker',
+      cellEditor: 'agDateCellEditor',
       width: 150,
       filter: 'agDateColumnFilter',
     },
