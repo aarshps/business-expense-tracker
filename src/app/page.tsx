@@ -110,14 +110,17 @@ export default function Home() {
               >
                 Add Expense
               </button>
-              {selectedRows.length > 0 && (
-                <button
-                  onClick={() => setExpenses(expenses.filter((_, i) => !selectedRows.includes(i)))}
-                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                >
-                  Delete Selected
-                </button>
-              )}
+              <button
+                onClick={() => selectedRows.length > 0 && setExpenses(expenses.filter((_, i) => !selectedRows.includes(i)))}
+                disabled={selectedRows.length === 0}
+                className={`px-4 py-2 rounded-md ${
+                  selectedRows.length > 0 
+                    ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Delete Selected
+              </button>
             </div>
           </div>
           
