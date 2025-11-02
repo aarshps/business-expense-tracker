@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Check localStorage for saved theme preference
@@ -14,37 +15,46 @@ export default function ThemeToggle() {
       // Default to system preference
       setTheme('system');
     }
-    applyTheme(savedTheme || 'system');
+    setMounted(true);
   }, []);
 
-  const applyTheme = (selectedTheme: 'light' | 'dark' | 'system') => {
-    if (typeof window === 'undefined') return;
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
     
-    if (selectedTheme === 'system') {
+    // Apply theme immediately
+    if (newTheme === 'system') {
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (systemPrefersDark) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
-    } else if (selectedTheme === 'dark') {
+    } else if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    applyTheme(newTheme);
-  };
+  // Don't render anything on the server
+  if (!mounted) {
+    return (
+      <button
+        className="p-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+        aria-label="Theme toggle"
+        disabled
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+        </svg>
+      </button>
+    );
+  }
 
   // Determine current effective theme for button text/icon
   const getCurrentEffectiveTheme = () => {
-    if (typeof window === 'undefined') return 'light';
-    
     if (theme === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
