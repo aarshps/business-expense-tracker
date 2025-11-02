@@ -20,18 +20,8 @@ type FinancialTransaction = {
   toNodeId: string;
   amount: number;
   description: string;
-  category: string;
   date: string;
   status: 'pending' | 'completed' | 'cancelled';
-  userId: string;
-  createdAt: string;
-};
-
-type TransactionCategory = {
-  _id: string;
-  name: string;
-  type: 'income' | 'expense';
-  color: string;
   userId: string;
   createdAt: string;
 };
@@ -40,7 +30,6 @@ export default function FinancialTreeDashboard() {
   const { data: session, status } = useSession();
   const [nodes, setNodes] = useState<FinancialNode[]>([]);
   const [transactions, setTransactions] = useState<FinancialTransaction[]>([]);
-  const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -52,15 +41,13 @@ export default function FinancialTreeDashboard() {
   const [incomeForm, setIncomeForm] = useState({
     fromNodeId: '',
     amount: '',
-    description: '',
-    category: ''
+    description: ''
   });
   
   const [expenseForm, setExpenseForm] = useState({
     toNodeId: '',
     amount: '',
-    description: '',
-    category: ''
+    description: ''
   });
 
   // Fetch all financial data
@@ -97,14 +84,6 @@ export default function FinancialTreeDashboard() {
         }
         const transactionsData = await transactionsResponse.json();
         setTransactions(transactionsData.transactions);
-
-        // Fetch categories
-        const categoriesResponse = await fetch('/api/financial-tree/categories');
-        if (!categoriesResponse.ok) {
-          throw new Error('Failed to fetch categories');
-        }
-        const categoriesData = await categoriesResponse.json();
-        setCategories(categoriesData.categories);
       } catch (err) {
         console.error('Error fetching financial data:', err);
         setError('Failed to load financial data. Please try again.');
@@ -146,8 +125,7 @@ export default function FinancialTreeDashboard() {
     fromNodeId: string, 
     toNodeId: string, 
     amount: number, 
-    description: string = '', 
-    category: string = ''
+    description: string = ''
   ) => {
     if (!session || !session.user) return;
 
@@ -155,7 +133,7 @@ export default function FinancialTreeDashboard() {
       const response = await fetch('/api/financial-tree/transactions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fromNodeId, toNodeId, amount, description, category }),
+        body: JSON.stringify({ fromNodeId, toNodeId, amount, description }),
       });
 
       if (!response.ok) {
@@ -181,29 +159,6 @@ export default function FinancialTreeDashboard() {
     }
   };
 
-  // Add new category
-  const addCategory = async (name: string, type: 'income' | 'expense', color: string = '#cccccc') => {
-    if (!session || !session.user) return;
-
-    try {
-      const response = await fetch('/api/financial-tree/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, type, color }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create category');
-      }
-
-      const data = await response.json();
-      setCategories([...categories, data.category]);
-    } catch (err) {
-      console.error('Error creating category:', err);
-      alert('Failed to create category. Please try again.');
-    }
-  };
-
   // Handle income form submission
   const handleAddIncome = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,12 +178,11 @@ export default function FinancialTreeDashboard() {
       incomeForm.fromNodeId,
       businessNode._id,
       parseFloat(incomeForm.amount),
-      incomeForm.description,
-      incomeForm.category
+      incomeForm.description
     );
     
     // Reset form and close modal
-    setIncomeForm({ fromNodeId: '', amount: '', description: '', category: '' });
+    setIncomeForm({ fromNodeId: '', amount: '', description: '' });
     setShowAddIncomeModal(false);
   };
 
@@ -251,12 +205,11 @@ export default function FinancialTreeDashboard() {
       businessNode._id,
       expenseForm.toNodeId,
       parseFloat(expenseForm.amount),
-      expenseForm.description,
-      expenseForm.category
+      expenseForm.description
     );
     
     // Reset form and close modal
-    setExpenseForm({ toNodeId: '', amount: '', description: '', category: '' });
+    setExpenseForm({ toNodeId: '', amount: '', description: '' });
     setShowAddExpenseModal(false);
   };
 
@@ -305,7 +258,7 @@ export default function FinancialTreeDashboard() {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-4 mb-4">
           <h1 className="text-2xl font-bold text-gray-900">Financial Tree Dashboard</h1>
-          <p className="text-gray-800">Welcome, {session.user.name}</p>
+          <p className="text-gray-700">Welcome, {session.user.name}</p>
         </div>
 
         {/* Summary Cards */}
@@ -444,11 +397,11 @@ export default function FinancialTreeDashboard() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">From</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">To</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Description</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Amount</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -458,7 +411,7 @@ export default function FinancialTreeDashboard() {
                     
                     return (
                       <tr key={transaction._id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {new Date(transaction.date).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -467,7 +420,7 @@ export default function FinancialTreeDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {toNode ? toNode.name : 'Unknown'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                           {transaction.description || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">
@@ -498,12 +451,12 @@ export default function FinancialTreeDashboard() {
                 <select
                   value={incomeForm.fromNodeId}
                   onChange={(e) => setIncomeForm({...incomeForm, fromNodeId: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 >
                   <option value="">Select Income Entity</option>
                   {incomeNodes.map(node => (
-                    <option key={node._id} value={node._id}>{node.name}</option>
+                    <option key={node._id} value={node._id} className="text-gray-700">{node.name}</option>
                   ))}
                 </select>
               </div>
@@ -516,7 +469,7 @@ export default function FinancialTreeDashboard() {
                   type="number"
                   value={incomeForm.amount}
                   onChange={(e) => setIncomeForm({...incomeForm, amount: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -524,7 +477,7 @@ export default function FinancialTreeDashboard() {
                 />
               </div>
               
-              <div className="mb-4">
+              <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
@@ -532,25 +485,9 @@ export default function FinancialTreeDashboard() {
                   type="text"
                   value={incomeForm.description}
                   onChange={(e) => setIncomeForm({...incomeForm, description: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   placeholder="e.g., Monthly investment, bonus, etc."
                 />
-              </div>
-              
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  value={incomeForm.category}
-                  onChange={(e) => setIncomeForm({...incomeForm, category: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories.filter(cat => cat.type === 'income').map(category => (
-                    <option key={category._id} value={category.name}>{category.name}</option>
-                  ))}
-                </select>
               </div>
               
               <div className="flex justify-end space-x-3">
@@ -586,12 +523,12 @@ export default function FinancialTreeDashboard() {
                 <select
                   value={expenseForm.toNodeId}
                   onChange={(e) => setExpenseForm({...expenseForm, toNodeId: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 >
                   <option value="">Select Expense Entity</option>
                   {expenseNodes.map(node => (
-                    <option key={node._id} value={node._id}>{node.name}</option>
+                    <option key={node._id} value={node._id} className="text-gray-700">{node.name}</option>
                   ))}
                 </select>
               </div>
@@ -604,7 +541,7 @@ export default function FinancialTreeDashboard() {
                   type="number"
                   value={expenseForm.amount}
                   onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -612,7 +549,7 @@ export default function FinancialTreeDashboard() {
                 />
               </div>
               
-              <div className="mb-4">
+              <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Description
                 </label>
@@ -620,25 +557,9 @@ export default function FinancialTreeDashboard() {
                   type="text"
                   value={expenseForm.description}
                   onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
                   placeholder="e.g., Cleaning fee, electricity bill, etc."
                 />
-              </div>
-              
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  value={expenseForm.category}
-                  onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  {categories.filter(cat => cat.type === 'expense').map(category => (
-                    <option key={category._id} value={category.name}>{category.name}</option>
-                  ))}
-                </select>
               </div>
               
               <div className="flex justify-end space-x-3">
