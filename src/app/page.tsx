@@ -10,7 +10,6 @@ type Expense = {
   description: string;
   category: string;
   amount: string;
-  receipt: string;
   status: string;
 };
 
@@ -21,7 +20,7 @@ export default function Home() {
   const [cellValue, setCellValue] = useState('');
 
   // Columns for the Excel-like grid
-  const columns = ['Date', 'Description', 'Category', 'Amount', 'Receipt', 'Status'];
+  const columns = ['Date', 'Description', 'Category', 'Amount', 'Status'];
 
   // Add a new row to the expenses
   const addRow = () => {
@@ -31,7 +30,6 @@ export default function Home() {
       description: '',
       category: '',
       amount: '',
-      receipt: '',
       status: 'Pending',
     };
     setExpenses([...expenses, newRow]);
@@ -181,15 +179,6 @@ export default function Home() {
                           placeholder="Amount in ₹"
                           min="0"
                           step="0.01"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <input
-                          type="text"
-                          value={expense.receipt}
-                          onChange={(e) => updateCell(rowIndex, 'receipt', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                          placeholder="Receipt URL"
                         />
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
