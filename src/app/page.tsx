@@ -16,6 +16,7 @@ type Expense = {
 export default function Home() {
   const { data: session, status } = useSession();
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: string } | null>(null);
   const [cellValue, setCellValue] = useState('');
 
@@ -102,12 +103,22 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="flex justify-between items-center p-4 border-b bg-gray-100">
             <h2 className="text-xl font-semibold text-gray-900">Expenses</h2>
-            <button 
-              onClick={addRow}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Add Expense
-            </button>
+            <div className="flex space-x-2">
+              <button 
+                onClick={addRow}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Add Expense
+              </button>
+              {selectedRows.length > 0 && (
+                <button
+                  onClick={() => setExpenses(expenses.filter((_, i) => !selectedRows.includes(i)))}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Delete Selected
+                </button>
+              )}
+            </div>
           </div>
           
           {/* Excel-like grid */}
@@ -115,6 +126,20 @@ export default function Home() {
             <table className="min-w-full border-collapse">
               <thead>
                 <tr className="bg-gray-100">
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-12">
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedRows(expenses.map((_, index) => index));
+                        } else {
+                          setSelectedRows([]);
+                        }
+                      }}
+                      checked={selectedRows.length === expenses.length && expenses.length > 0}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                  </th>
                   {columns.map((col, index) => (
                     <th 
                       key={index} 
@@ -123,9 +148,6 @@ export default function Home() {
                       {col}
                     </th>
                   ))}
-                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700">
-                    Actions
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -137,7 +159,24 @@ export default function Home() {
                   </tr>
                 ) : (
                   expenses.map((expense, rowIndex) => (
-                    <tr key={expense.id} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <tr 
+                      key={expense.id} 
+                      className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${selectedRows.includes(rowIndex) ? 'bg-blue-100' : ''}`}
+                    >
+                      <td className="border border-gray-300 px-4 py-2 w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(rowIndex)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedRows([...selectedRows, rowIndex]);
+                            } else {
+                              setSelectedRows(selectedRows.filter(index => index !== rowIndex));
+                            }
+                          }}
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                      </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <input
                           type="date"
@@ -191,14 +230,6 @@ export default function Home() {
                           <option value="Approved">Approved</option>
                           <option value="Rejected">Rejected</option>
                         </select>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        <button
-                          onClick={() => setExpenses(expenses.filter((_, i) => i !== rowIndex))}
-                          className="text-red-600 hover:text-red-800"
-                        >
-                          Delete
-                        </button>
                       </td>
                     </tr>
                   ))
