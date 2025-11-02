@@ -145,7 +145,7 @@ export default function Home() {
                           type="date"
                           value={expense.date}
                           onChange={(e) => updateCell(rowIndex, 'date', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
@@ -153,16 +153,16 @@ export default function Home() {
                           type="text"
                           value={expense.description}
                           onChange={(e) => updateCell(rowIndex, 'description', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
                         <select
                           value={expense.category}
                           onChange={(e) => updateCell(rowIndex, 'category', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
                         >
-                          <option value="">Select</option>
+                          <option value="" className="text-gray-500">Select</option>
                           <option value="Travel">Travel</option>
                           <option value="Meals">Meals</option>
                           <option value="Office Supplies">Office Supplies</option>
@@ -176,7 +176,7 @@ export default function Home() {
                           type="number"
                           value={expense.amount}
                           onChange={(e) => updateCell(rowIndex, 'amount', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                           placeholder="0.00"
                         />
                       </td>
@@ -185,7 +185,7 @@ export default function Home() {
                           type="text"
                           value={expense.receipt}
                           onChange={(e) => updateCell(rowIndex, 'receipt', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                           placeholder="Receipt URL"
                         />
                       </td>
@@ -193,7 +193,7 @@ export default function Home() {
                         <select
                           value={expense.status}
                           onChange={(e) => updateCell(rowIndex, 'status', e.target.value)}
-                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500"
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
                         >
                           <option value="Pending">Pending</option>
                           <option value="Approved">Approved</option>
