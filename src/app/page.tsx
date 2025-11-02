@@ -248,13 +248,9 @@ export default function Home() {
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
                         >
                           <option value="">Select</option>
-                          <option value="Travel">Travel</option>
-                          <option value="Meals">Meals</option>
-                          <option value="Office Supplies">Office Supplies</option>
-                          <option value="Software">Software</option>
-                          <option value="Marketing">Marketing</option>
+                          <option value="Expense">Expense</option>
                           <option value="Investment">Investment</option>
-                          <option value="Other">Other</option>
+                          <option value="Income">Income</option>
                         </select>
                       </td>
                       <td className="border border-gray-300 px-4 py-2 w-32">
