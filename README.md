@@ -1,6 +1,12 @@
 # Business Expense Tracker
 
+[![Vercel Deployment](https://vercelbadge.vercel.app/api/aarshps/business-expense-tracker?style=flat)](https://business-expense-tracker-one.vercel.app/)
+
 A Next.js application for tracking business expenses with individual database isolation per user.
+
+## Live Demo
+
+**Deployed on Vercel:** [https://business-expense-tracker-one.vercel.app/](https://business-expense-tracker-one.vercel.app/)
 
 ## Features
 
