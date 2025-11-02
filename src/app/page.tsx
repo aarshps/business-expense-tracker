@@ -148,20 +148,17 @@ export default function Home() {
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </th>
-                  {columns.map((col, index) => (
-                    <th 
-                      key={index} 
-                      className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700"
-                    >
-                      {col}
-                    </th>
-                  ))}
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Date</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-64">Description</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-40">Category</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Amount</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {expenses.length === 0 ? (
                   <tr>
-                    <td colSpan={columns.length + 1} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
+                    <td colSpan={6} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
                       No expenses added yet. Click "Add Expense" to get started.
                     </td>
                   </tr>
@@ -185,7 +182,7 @@ export default function Home() {
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 w-32">
                         <input
                           type="date"
                           value={expense.date}
@@ -193,7 +190,7 @@ export default function Home() {
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 w-64">
                         <input
                           type="text"
                           value={expense.description}
@@ -201,7 +198,7 @@ export default function Home() {
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 w-40">
                         <select
                           value={expense.category}
                           onChange={(e) => updateCell(rowIndex, 'category', e.target.value)}
@@ -217,7 +214,7 @@ export default function Home() {
                           <option value="Other">Other</option>
                         </select>
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 w-32">
                         <input
                           type="number"
                           value={expense.amount}
@@ -228,7 +225,7 @@ export default function Home() {
                           step="0.01"
                         />
                       </td>
-                      <td className="border border-gray-300 px-4 py-2">
+                      <td className="border border-gray-300 px-4 py-2 w-32">
                         <select
                           value={expense.status}
                           onChange={(e) => updateCell(rowIndex, 'status', e.target.value)}
