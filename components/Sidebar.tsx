@@ -1,7 +1,19 @@
 import { useState, useEffect } from 'react';
 import { FiHome, FiDollarSign, FiBarChart2, FiSettings, FiUser, FiLogOut, FiDatabase, FiGlobe } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import styles from './Sidebar.module.css';
+
+// Extend the default session types to include our custom properties
+declare module 'next-auth' {
+  interface User {
+    googleId?: string;
+  }
+  
+  interface Session {
+    user: User;
+  }
+}
 
 interface MenuItem {
   id: string;
@@ -38,7 +50,9 @@ export default function Sidebar({ children }: SidebarProps) {
           } else {
             console.error('Failed to fetch database name:', response.status);
             // Fallback to generating the name from session data
-            const googleId = sessionData?.user?.googleId || sessionData?.user?.sub || sessionData?.user?.id;
+            // Using type assertion since googleId might not be in the default type
+            const user = sessionData.user as any;
+            const googleId = user.googleId || user.sub || user.id;
             if (googleId) {
               const fallbackDbName = `bet_${googleId}_${process.env.NODE_ENV || 'development'}`;
               setDbName(fallbackDbName);
@@ -50,7 +64,8 @@ export default function Sidebar({ children }: SidebarProps) {
         } catch (error) {
           console.error('Error fetching database name:', error);
           // Fallback to generating the name from session data
-          const googleId = sessionData?.user?.googleId || sessionData?.user?.sub || sessionData?.user?.id;
+          const user = sessionData.user as any;
+          const googleId = user.googleId || user.sub || user.id;
           if (googleId) {
             const fallbackDbName = `bet_${googleId}_${process.env.NODE_ENV || 'development'}`;
             setDbName(fallbackDbName);
@@ -72,12 +87,13 @@ export default function Sidebar({ children }: SidebarProps) {
         <div className={styles.userSection}>
           <div className={styles.userSectionContent}>
             <div className={styles.userAvatar}>
-              <img 
+              <Image 
                 src={sessionData?.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(sessionData?.user?.name || 'User')}&background=random`} 
                 alt={sessionData?.user?.name || 'User'}
                 width={32}
                 height={32}
                 className={styles.avatarImg}
+                unoptimized // Since we're using a dynamic URL from UI Avatars
               />
             </div>
             <div className={styles.userSectionText}>
