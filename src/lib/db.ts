@@ -9,13 +9,19 @@ if (!MONGODB_URI) {
 
 // Function to modify the connection string to use the correct database name based on environment
 function getConnectionURI(): string {
-  const envDbName = `business_expense_tracker_${MONGODB_ENV}`;
-  
-  // Parse the original URI to extract components
-  const url = new URL(MONGODB_URI);
-  url.pathname = `/${envDbName}`;
-  
-  return url.toString();
+  try {
+    const envDbName = `business_expense_tracker_${MONGODB_ENV}`;
+    
+    // Parse the original URI to extract components
+    const url = new URL(MONGODB_URI);
+    url.pathname = `/${envDbName}`;
+    
+    return url.toString();
+  } catch (error) {
+    console.error("Error modifying connection URI:", error);
+    // If URL parsing fails, return the original URI
+    return MONGODB_URI;
+  }
 }
 
 // Cache the mongoose connection in development to prevent multiple connections

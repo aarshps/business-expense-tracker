@@ -1,27 +1,5 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-
-// Extract MongoDB URI for adapter
-const mongoUri = process.env.MONGODB_URI;
-const MONGODB_ENV = process.env.MONGODB_ENV || 'loc1';
-
-if (!mongoUri) {
-  throw new Error("MONGODB_URI is not defined in environment variables");
-}
-
-// Function to modify the connection string to use the correct database name based on environment
-function getConnectionURI(): string {
-  const envDbName = `business_expense_tracker_${MONGODB_ENV}`;
-  
-  // Parse the original URI to extract components
-  const url = new URL(mongoUri);
-  url.pathname = `/${envDbName}`;
-  
-  return url.toString();
-}
-
-const connectionURI = getConnectionURI();
 
 const handler = NextAuth({
   providers: [
@@ -30,7 +8,6 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  adapter: MongoDBAdapter(connectionURI),
   callbacks: {
     async jwt({ token, user, account }) {
       // Add user info to token on initial sign in
