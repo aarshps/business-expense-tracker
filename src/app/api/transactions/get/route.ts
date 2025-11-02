@@ -17,7 +17,13 @@ const transactionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
+// Ensure we're using the updated model
+let Transaction;
+if (mongoose.models.Transaction) {
+  Transaction = mongoose.models.Transaction;
+} else {
+  Transaction = mongoose.model('Transaction', transactionSchema);
+}
 
 export async function GET(request: NextRequest) {
   try {

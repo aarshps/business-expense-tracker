@@ -30,7 +30,6 @@ export default function Home() {
           if (response.ok) {
             const data = await response.json();
             // Convert MongoDB _id to id for consistency
-            console.log('Raw loaded transactions:', data.transactions);
             const formattedTransactions = data.transactions.map((transaction: any) => ({
               id: transaction._id,
               date: transaction.date,
@@ -41,7 +40,6 @@ export default function Home() {
               amount: transaction.amount,
               status: transaction.status,
             }));
-            console.log('Formatted transactions:', formattedTransactions);
             setTransactions(formattedTransactions);
             setHasChanges(false); // No changes initially since we just loaded
           } else {
@@ -346,7 +344,6 @@ export default function Home() {
               <div>
                 <button 
                   onClick={async () => {
-                    console.log('Saving transactions:', transactions);
                     try {
                       const response = await fetch('/api/transactions', {
                         method: 'POST',

@@ -17,7 +17,13 @@ const transactionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
+// Ensure we're using the updated model
+let Transaction;
+if (mongoose.models.Transaction) {
+  Transaction = mongoose.models.Transaction;
+} else {
+  Transaction = mongoose.model('Transaction', transactionSchema);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,13 +52,11 @@ export async function POST(request: NextRequest) {
     await Transaction.deleteMany({ userId });
 
     // Insert new transactions
-    console.log('Received transactions:', transactions);
     const transactionDocs = transactions.map((transaction: any) => ({
       ...transaction,
       userId,
       environment: process.env.MONGODB_ENV || 'unknown',
     }));
-    console.log('Transaction docs to save:', transactionDocs);
 
     if (transactionDocs.length > 0) {
       await Transaction.insertMany(transactionDocs);
