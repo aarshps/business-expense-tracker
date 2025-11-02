@@ -10,8 +10,8 @@ export default function Home() {
         </div>
       </header>
       
-      <main className="flex-grow flex items-center justify-center p-4">
-        <div className="max-w-7xl mx-auto w-full">
+      <main className="flex-grow">
+        <div className="max-w-7xl mx-auto w-full p-4">
           {/* Main content can go here if needed */}
         </div>
       </main>
