@@ -111,7 +111,12 @@ export default function Home() {
                 Add Expense
               </button>
               <button
-                onClick={() => selectedRows.length > 0 && setExpenses(expenses.filter((_, i) => !selectedRows.includes(i)))}
+                onClick={() => {
+                  if (selectedRows.length > 0) {
+                    setExpenses(expenses.filter((_, i) => !selectedRows.includes(i)));
+                    setSelectedRows([]); // Clear selection after deletion
+                  }
+                }}
                 disabled={selectedRows.length === 0}
                 className={`px-4 py-2 rounded-md ${
                   selectedRows.length > 0 
