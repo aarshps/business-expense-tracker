@@ -10,14 +10,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <div className="content">
-          <p>Welcome to a blank app!</p>
-        </div>
       </main>
-
-      <footer>
-        <p>&copy; {new Date().getFullYear()}</p>
-      </footer>
 
       <style jsx global>{`
         * {
@@ -34,24 +27,6 @@ export default function Home() {
       <style jsx>{`
         .container {
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        main {
-          flex: 1;
-          padding: 2rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-        }
-
-        footer {
-          padding: 1rem;
-          text-align: center;
-          border-top: 1px solid #e5e7eb;
         }
       `}</style>
     </div>
