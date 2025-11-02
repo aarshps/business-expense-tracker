@@ -17,7 +17,7 @@ const transactionSchema = new mongoose.Schema({
 });
 
 // Ensure we're using the updated model
-let Transaction;
+let Transaction: mongoose.Model<any>;
 if (mongoose.models.Transaction) {
   Transaction = mongoose.models.Transaction;
 } else {
