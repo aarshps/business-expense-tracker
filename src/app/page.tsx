@@ -70,43 +70,6 @@ export default function Home() {
     setHasChanges(true);
   };
 
-  // Update cell value
-  const updateCell = (rowIndex: number, field: keyof Transaction, value: string) => {
-    const updatedTransactions = [...transactions];
-    updatedTransactions[rowIndex] = { ...updatedTransactions[rowIndex], [field]: value };
-    
-    // Set default values based on category
-    if (field === 'category') {
-      switch (value) {
-        case 'Expense':
-          updatedTransactions[rowIndex].from = 'Business';
-          updatedTransactions[rowIndex].to = '';
-          break;
-        case 'Investment':
-          updatedTransactions[rowIndex].from = '';
-          updatedTransactions[rowIndex].to = 'Business';
-          break;
-        case 'Income':
-          updatedTransactions[rowIndex].from = '';
-          updatedTransactions[rowIndex].to = 'Business';
-          break;
-        default:
-          break;
-      }
-    }
-    
-    setTransactions(updatedTransactions);
-    setHasChanges(true);
-  };
-
-  // Update cell value
-  const updateCell = (rowIndex: number, field: keyof Transaction, value: string) => {
-    const updatedTransactions = [...transactions];
-    updatedTransactions[rowIndex] = { ...updatedTransactions[rowIndex], [field]: value };
-    setTransactions(updatedTransactions);
-    setHasChanges(true);
-  };
-
   // Toggle row selection
   const toggleRowSelection = (rowIndex: number) => {
     if (selectedRows.includes(rowIndex)) {
