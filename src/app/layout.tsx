@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hello World App",
-  description: "A simple hello world application",
+  title: "Business Expense Tracker",
+  description: "Track your business expenses efficiently",
 };
 
 export default function RootLayout({
