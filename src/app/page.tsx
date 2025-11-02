@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Define the structure for expense data
 type Expense = {
@@ -18,6 +18,37 @@ export default function Home() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Load expenses when session is available
+  useEffect(() => {
+    if (session && session.user) {
+      const fetchExpenses = async () => {
+        try {
+          const response = await fetch('/api/expenses/get');
+          if (response.ok) {
+            const data = await response.json();
+            // Convert MongoDB _id to id for consistency
+            const formattedExpenses = data.expenses.map((expense: any) => ({
+              id: expense._id,
+              date: expense.date,
+              description: expense.description,
+              category: expense.category,
+              amount: expense.amount,
+              status: expense.status,
+            }));
+            setExpenses(formattedExpenses);
+            setHasChanges(false); // No changes initially since we just loaded
+          } else {
+            console.error('Failed to fetch expenses');
+          }
+        } catch (error) {
+          console.error('Error fetching expenses:', error);
+        }
+      };
+
+      fetchExpenses();
+    }
+  }, [session]);
 
   // Add a new row to the expenses
   const addRow = () => {
