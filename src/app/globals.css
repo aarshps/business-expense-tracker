@@ -10,3 +10,11 @@ body {
   margin: 0;
   padding: 0;
 }
+
+header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+footer {
+  border-top: 1px solid #e5e7eb;
+}
