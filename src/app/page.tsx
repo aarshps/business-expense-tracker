@@ -1,19 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useState, useCallback, useMemo } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import { ModuleRegistry } from '@ag-grid-community/core';
-import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
-import { CsvExportModule } from '@ag-grid-community/csv-export';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-
-// Register modules
-ModuleRegistry.registerModules([
-  ClientSideRowModelModule,
-  CsvExportModule,
-]);
+import { useState } from 'react';
 
 // Define the structure for expense data
 type Expense = {
@@ -28,10 +16,10 @@ type Expense = {
 export default function Home() {
   const { data: session, status } = useSession();
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [selectedRows, setSelectedRows] = useState<Expense[]>([]);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   // Add a new row to the expenses
-  const addRow = useCallback(() => {
+  const addRow = () => {
     const newRow: Expense = {
       id: Date.now().toString(),
       date: '',
@@ -40,86 +28,45 @@ export default function Home() {
       amount: '',
       status: 'Pending',
     };
-    setExpenses(prev => [...prev, newRow]);
-  }, []);
+    setExpenses([...expenses, newRow]);
+  };
+
+  // Update cell value
+  const updateCell = (rowIndex: number, field: keyof Expense, value: string) => {
+    const updatedExpenses = [...expenses];
+    updatedExpenses[rowIndex] = { ...updatedExpenses[rowIndex], [field]: value };
+    setExpenses(updatedExpenses);
+  };
+
+  // Toggle row selection
+  const toggleRowSelection = (rowIndex: number) => {
+    if (selectedRows.includes(rowIndex)) {
+      setSelectedRows(selectedRows.filter(index => index !== rowIndex));
+    } else {
+      setSelectedRows([...selectedRows, rowIndex]);
+    }
+  };
+
+  // Toggle select all
+  const toggleSelectAll = () => {
+    if (selectedRows.length === expenses.length && expenses.length > 0) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(expenses.map((_, index) => index));
+    }
+  };
 
   // Delete selected rows
-  const deleteSelectedRows = useCallback(() => {
-    const selectedIds = new Set(selectedRows.map(row => row.id));
-    setExpenses(prev => prev.filter(expense => !selectedIds.has(expense.id)));
+  const deleteSelectedRows = () => {
+    setExpenses(expenses.filter((_, index) => !selectedRows.includes(index)));
     setSelectedRows([]);
-  }, [selectedRows]);
-
-  // Column definitions for Ag-Grid
-  const columnDefs = useMemo(() => [
-    {
-      headerName: 'Date',
-      field: 'date',
-      editable: true,
-      cellEditor: 'agDateCellEditor',
-      width: 150,
-      filter: true,
-    },
-    {
-      headerName: 'Description',
-      field: 'description',
-      editable: true,
-      width: 250,
-      filter: true,
-    },
-    {
-      headerName: 'Category',
-      field: 'category',
-      editable: true,
-      cellEditor: 'agSelectCellEditor',
-      cellEditorParams: {
-        values: ['Travel', 'Meals', 'Office Supplies', 'Software', 'Marketing', 'Investment', 'Other'],
-      },
-      width: 150,
-      filter: true,
-    },
-    {
-      headerName: 'Amount',
-      field: 'amount',
-      editable: true,
-      cellEditor: 'agNumberCellEditor',
-      valueFormatter: (params) => `₹${params.value || '0.00'}`,
-      width: 120,
-      filter: true,
-    },
-    {
-      headerName: 'Status',
-      field: 'status',
-      editable: true,
-      cellEditor: 'agSelectCellEditor',
-      cellEditorParams: {
-        values: ['Pending', 'Approved', 'Rejected'],
-      },
-      width: 120,
-      filter: true,
-    },
-  ], []);
-
-  // Default column properties
-  const defaultColDef = useMemo(() => ({
-    editable: true,
-    sortable: true,
-    filter: true,
-  }), []);
-
-  // Handle row selection changes
-  const onSelectionChanged = useCallback((event: any) => {
-    const selected = event.api.getSelectedRows();
-    setSelectedRows(selected);
-  }, []);
+  };
 
   // Calculate total expenses
-  const totalExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => {
-      const amount = parseFloat(expense.amount) || 0;
-      return sum + amount;
-    }, 0).toFixed(2);
-  }, [expenses]);
+  const totalExpenses = expenses.reduce((sum, expense) => {
+    const amount = parseFloat(expense.amount) || 0;
+    return sum + amount;
+  }, 0).toFixed(2);
 
   // Show loading while checking authentication status
   if (status === 'loading') {
@@ -169,7 +116,7 @@ export default function Home() {
     );
   }
 
-  // Show Ag-Grid when authenticated
+  // Show simple grid when authenticated
   return (
     <div className="flex-grow p-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
@@ -202,30 +149,106 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Ag-Grid */}
-          <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
-            <AgGridReact
-              rowData={expenses}
-              columnDefs={columnDefs}
-              defaultColDef={defaultColDef}
-              rowSelection="multiple"
-              onSelectionChanged={onSelectionChanged}
-              animateRows={true}
-              pagination={true}
-              paginationPageSize={10}
-              suppressRowClickSelection={false}
-              rowMultiSelectWithClick={true}
-              onCellValueChanged={(event) => {
-                // Update the state with the new value
-                setExpenses(prev => 
-                  prev.map(expense => 
-                    expense.id === event.data.id 
-                      ? { ...expense, [event.colDef.field as keyof Expense]: event.newValue } 
-                      : expense
-                  )
-                );
-              }}
-            />
+          {/* Simple table grid */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-12">
+                    <input
+                      type="checkbox"
+                      onChange={toggleSelectAll}
+                      checked={selectedRows.length === expenses.length && expenses.length > 0}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Date</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-64">Description</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-40">Category</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Amount (₹)</th>
+                  <th className="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700 w-32">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {expenses.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
+                      No expenses added yet. Click "Add Expense" to get started.
+                    </td>
+                  </tr>
+                ) : (
+                  expenses.map((expense, rowIndex) => (
+                    <tr 
+                      key={expense.id} 
+                      className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${selectedRows.includes(rowIndex) ? 'bg-blue-100' : ''}`}
+                    >
+                      <td className="border border-gray-300 px-4 py-2 w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.includes(rowIndex)}
+                          onChange={() => toggleRowSelection(rowIndex)}
+                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-32">
+                        <input
+                          type="date"
+                          value={expense.date}
+                          onChange={(e) => updateCell(rowIndex, 'date', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-64">
+                        <input
+                          type="text"
+                          value={expense.description}
+                          onChange={(e) => updateCell(rowIndex, 'description', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-40">
+                        <select
+                          value={expense.category}
+                          onChange={(e) => updateCell(rowIndex, 'category', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
+                        >
+                          <option value="">Select</option>
+                          <option value="Travel">Travel</option>
+                          <option value="Meals">Meals</option>
+                          <option value="Office Supplies">Office Supplies</option>
+                          <option value="Software">Software</option>
+                          <option value="Marketing">Marketing</option>
+                          <option value="Investment">Investment</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-32">
+                        <input
+                          type="number"
+                          value={expense.amount}
+                          onChange={(e) => updateCell(rowIndex, 'amount', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
+                          placeholder="0.00"
+                          min="0"
+                          step="0.01"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 w-32">
+                        <select
+                          value={expense.status}
+                          onChange={(e) => updateCell(rowIndex, 'status', e.target.value)}
+                          className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 bg-white"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
           
           <div className="p-4 border-t bg-gray-100">
