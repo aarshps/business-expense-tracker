@@ -17,6 +17,7 @@ export default function Home() {
   const { data: session, status } = useSession();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Add a new row to the expenses
   const addRow = () => {
@@ -29,6 +30,7 @@ export default function Home() {
       status: 'Pending',
     };
     setExpenses([...expenses, newRow]);
+    setHasChanges(true);
   };
 
   // Update cell value
@@ -36,6 +38,7 @@ export default function Home() {
     const updatedExpenses = [...expenses];
     updatedExpenses[rowIndex] = { ...updatedExpenses[rowIndex], [field]: value };
     setExpenses(updatedExpenses);
+    setHasChanges(true);
   };
 
   // Toggle row selection
@@ -60,6 +63,7 @@ export default function Home() {
   const deleteSelectedRows = () => {
     setExpenses(expenses.filter((_, index) => !selectedRows.includes(index)));
     setSelectedRows([]);
+    setHasChanges(true);
   };
 
   // Calculate total expenses
@@ -255,8 +259,16 @@ export default function Home() {
             <div className="flex justify-between">
               <div>
                 <button 
-                  onClick={() => alert('Changes saved successfully!')}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  onClick={() => {
+                    alert('Changes saved successfully!');
+                    setHasChanges(false); // Reset the changes state after saving
+                  }}
+                  disabled={!hasChanges}
+                  className={`px-4 py-2 rounded-md ${
+                    hasChanges 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Save Changes
                 </button>
