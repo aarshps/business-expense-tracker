@@ -4,17 +4,6 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
 
-// Extend the default session types to include our custom properties
-declare module 'next-auth' {
-  interface User {
-    googleId?: string;
-  }
-  
-  interface Session {
-    user: User;
-  }
-}
-
 interface MenuItem {
   id: string;
   label: string;
