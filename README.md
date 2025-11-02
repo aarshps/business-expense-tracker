@@ -104,8 +104,40 @@ The application is pre-configured for Vercel deployment with:
 - Environment variable protection
 - Database isolation per user
 
+## Google OAuth Configuration
+
+For Google OAuth to work properly, you need to configure your Google Cloud Console:
+
+1. Go to Google Cloud Console > APIs & Services > Credentials
+2. Create or edit an OAuth 2.0 Client ID for a "Web application"
+3. Add the following to "Authorized JavaScript origins":
+   - `http://localhost:3000` (for local development)
+   - `https://your-vercel-domain.vercel.app` (for production)
+4. Add the following to "Authorized redirect URIs":
+   - `http://localhost:3000/api/auth/callback/google` (for local development)
+   - `https://your-vercel-domain.vercel.app/api/auth/callback/google` (for production)
+
+Make sure your `NEXTAUTH_URL` environment variable matches the domain you're deploying to.
+
 ## Troubleshooting
+
+### Google OAuth Issues
+
+If you encounter "redirect_uri_mismatch" errors:
+- Verify that your Google Cloud Console settings match your deployment URL exactly
+- Ensure `NEXTAUTH_URL` environment variable matches your domain
+- Wait a few minutes for Google Console changes to propagate
+- Clear browser cache and cookies, or try in an incognito window
+- Ensure you're using the correct OAuth 2.0 Client ID in your environment variables
+
+### Database Issues
 
 - If database names are not displaying properly, check that the API route `/api/user/dbName` is accessible
 - Ensure all environment variables are properly set in your deployment environment
 - Verify MongoDB connection string has proper permissions
+
+### Building and Deployment Issues
+
+- If build fails, run `npm run build` locally to identify any type errors
+- Run `npm run lint` to check for code style issues
+- Run `npx tsc --noEmit` to check for TypeScript errors
