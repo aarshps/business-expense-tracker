@@ -178,7 +178,9 @@ export default function Home() {
                           value={expense.amount}
                           onChange={(e) => updateCell(rowIndex, 'amount', e.target.value)}
                           className="w-full p-1 border-0 focus:ring-1 focus:ring-blue-500 text-gray-900 placeholder-gray-500"
-                          placeholder="0.00"
+                          placeholder="Amount in ₹"
+                          min="0"
+                          step="0.01"
                         />
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
@@ -226,7 +228,7 @@ export default function Home() {
               <div className="font-medium text-gray-800">
                 <span>Total Expenses: </span>
                 <span className="font-bold text-gray-900">
-                  ${expenses.reduce((sum, expense) => sum + (parseFloat(expense.amount) || 0), 0).toFixed(2)}
+                  ₹{expenses.reduce((sum, expense) => sum + (parseFloat(expense.amount) || 0), 0).toFixed(2)}
                 </span>
               </div>
             </div>
