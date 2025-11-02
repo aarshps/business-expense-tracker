@@ -344,6 +344,17 @@ export default function Home() {
               <div>
                 <button 
                   onClick={async () => {
+                    console.log('=== DEBUGGING TRANSACTION SEND ===');
+                    console.log('Transactions being sent:', JSON.stringify(transactions, null, 2));
+                    
+                    // Check first transaction for from/to fields
+                    if (transactions && transactions.length > 0) {
+                      const firstTx = transactions[0];
+                      console.log('First transaction keys:', Object.keys(firstTx));
+                      console.log('First transaction from field:', firstTx.from);
+                      console.log('First transaction to field:', firstTx.to);
+                    }
+                    
                     try {
                       const response = await fetch('/api/transactions', {
                         method: 'POST',
