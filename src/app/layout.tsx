@@ -23,10 +23,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // On page load or when changing themes, best to add inline in \`head\` to avoid FOUC
+              if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark')
+              } else {
+                document.documentElement.classList.remove('dark')
+              }
+            `
+          }}
+        />
         {children}
       </body>
     </html>
