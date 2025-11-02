@@ -43,6 +43,25 @@ export default function FinancialTreeDashboard() {
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // State for modals
+  const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  
+  // State for transaction forms
+  const [incomeForm, setIncomeForm] = useState({
+    fromNodeId: '',
+    amount: '',
+    description: '',
+    category: ''
+  });
+  
+  const [expenseForm, setExpenseForm] = useState({
+    toNodeId: '',
+    amount: '',
+    description: '',
+    category: ''
+  });
 
   // Fetch all financial data
   useEffect(() => {
@@ -185,6 +204,62 @@ export default function FinancialTreeDashboard() {
     }
   };
 
+  // Handle income form submission
+  const handleAddIncome = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!incomeForm.fromNodeId || !incomeForm.amount) {
+      alert('Please select a source and enter an amount');
+      return;
+    }
+    
+    const businessNode = nodes.find(node => node.type === 'business');
+    if (!businessNode) {
+      alert('Business node not found');
+      return;
+    }
+    
+    await addTransaction(
+      incomeForm.fromNodeId,
+      businessNode._id,
+      parseFloat(incomeForm.amount),
+      incomeForm.description,
+      incomeForm.category
+    );
+    
+    // Reset form and close modal
+    setIncomeForm({ fromNodeId: '', amount: '', description: '', category: '' });
+    setShowAddIncomeModal(false);
+  };
+
+  // Handle expense form submission
+  const handleAddExpense = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!expenseForm.toNodeId || !expenseForm.amount) {
+      alert('Please select a destination and enter an amount');
+      return;
+    }
+    
+    const businessNode = nodes.find(node => node.type === 'business');
+    if (!businessNode) {
+      alert('Business node not found');
+      return;
+    }
+    
+    await addTransaction(
+      businessNode._id,
+      expenseForm.toNodeId,
+      parseFloat(expenseForm.amount),
+      expenseForm.description,
+      expenseForm.category
+    );
+    
+    // Reset form and close modal
+    setExpenseForm({ toNodeId: '', amount: '', description: '', category: '' });
+    setShowAddExpenseModal(false);
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="flex-grow flex items-center justify-center">
@@ -220,6 +295,10 @@ export default function FinancialTreeDashboard() {
   const totalExpenses = nodes
     .filter(node => node.type === 'expense')
     .reduce((sum, node) => sum + Math.abs(node.balance), 0);
+
+  // Get income and expense nodes
+  const incomeNodes = nodes.filter(node => node.type === 'income');
+  const expenseNodes = nodes.filter(node => node.type === 'expense');
 
   return (
     <div className="flex-grow p-4 bg-gray-50">
@@ -270,17 +349,15 @@ export default function FinancialTreeDashboard() {
               </button>
             </div>
             <div className="space-y-2">
-              {nodes
-                .filter(node => node.type === 'income')
-                .map(node => (
-                  <div key={node._id} className="p-3 bg-green-50 rounded-md border border-green-200">
-                    <div className="flex justify-between">
-                      <span className="font-medium text-green-800">{node.name}</span>
-                      <span className="font-bold text-green-900">₹{node.balance.toFixed(2)}</span>
-                    </div>
+              {incomeNodes.map(node => (
+                <div key={node._id} className="p-3 bg-green-50 rounded-md border border-green-200">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-green-800">{node.name}</span>
+                    <span className="font-bold text-green-900">₹{node.balance.toFixed(2)}</span>
                   </div>
-                ))}
-              {nodes.filter(node => node.type === 'income').length === 0 && (
+                </div>
+              ))}
+              {incomeNodes.length === 0 && (
                 <p className="text-gray-500 text-center py-4">No income entities added yet</p>
               )}
             </div>
@@ -304,28 +381,24 @@ export default function FinancialTreeDashboard() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-2">
                 <button 
-                  onClick={() => {
-                    const fromNode = nodes.find(n => n.type === 'income');
-                    const toNode = businessNode;
-                    if (fromNode && toNode) {
-                      const amount = prompt('Enter amount:');
-                      if (amount) addTransaction(fromNode._id, toNode._id, parseFloat(amount));
-                    }
-                  }}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                  onClick={() => setShowAddIncomeModal(true)}
+                  disabled={incomeNodes.length === 0}
+                  className={`px-3 py-2 rounded-md text-sm ${
+                    incomeNodes.length > 0
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Add Income
                 </button>
                 <button 
-                  onClick={() => {
-                    const fromNode = businessNode;
-                    const toNode = nodes.find(n => n.type === 'expense');
-                    if (fromNode && toNode) {
-                      const amount = prompt('Enter amount:');
-                      if (amount) addTransaction(fromNode._id, toNode._id, parseFloat(amount));
-                    }
-                  }}
-                  className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                  onClick={() => setShowAddExpenseModal(true)}
+                  disabled={expenseNodes.length === 0}
+                  className={`px-3 py-2 rounded-md text-sm ${
+                    expenseNodes.length > 0
+                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Add Expense
                 </button>
@@ -348,17 +421,15 @@ export default function FinancialTreeDashboard() {
               </button>
             </div>
             <div className="space-y-2">
-              {nodes
-                .filter(node => node.type === 'expense')
-                .map(node => (
-                  <div key={node._id} className="p-3 bg-red-50 rounded-md border border-red-200">
-                    <div className="flex justify-between">
-                      <span className="font-medium text-red-800">{node.name}</span>
-                      <span className="font-bold text-red-900">₹{Math.abs(node.balance).toFixed(2)}</span>
-                    </div>
+              {expenseNodes.map(node => (
+                <div key={node._id} className="p-3 bg-red-50 rounded-md border border-red-200">
+                  <div className="flex justify-between">
+                    <span className="font-medium text-red-800">{node.name}</span>
+                    <span className="font-bold text-red-900">₹{Math.abs(node.balance).toFixed(2)}</span>
                   </div>
-                ))}
-              {nodes.filter(node => node.type === 'expense').length === 0 && (
+                </div>
+              ))}
+              {expenseNodes.length === 0 && (
                 <p className="text-gray-500 text-center py-4">No expense entities added yet</p>
               )}
             </div>
@@ -413,6 +484,182 @@ export default function FinancialTreeDashboard() {
           )}
         </div>
       </div>
+
+      {/* Add Income Modal */}
+      {showAddIncomeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Add Income</h3>
+            <form onSubmit={handleAddIncome}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  From Entity *
+                </label>
+                <select
+                  value={incomeForm.fromNodeId}
+                  onChange={(e) => setIncomeForm({...incomeForm, fromNodeId: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select Income Entity</option>
+                  {incomeNodes.map(node => (
+                    <option key={node._id} value={node._id}>{node.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount (₹) *
+                </label>
+                <input
+                  type="number"
+                  value={incomeForm.amount}
+                  onChange={(e) => setIncomeForm({...incomeForm, amount: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={incomeForm.description}
+                  onChange={(e) => setIncomeForm({...incomeForm, description: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g., Monthly investment, bonus, etc."
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  value={incomeForm.category}
+                  onChange={(e) => setIncomeForm({...incomeForm, category: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Category</option>
+                  {categories.filter(cat => cat.type === 'income').map(category => (
+                    <option key={category._id} value={category.name}>{category.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddIncomeModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Add Income
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Expense Modal */}
+      {showAddExpenseModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Add Expense</h3>
+            <form onSubmit={handleAddExpense}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  To Entity *
+                </label>
+                <select
+                  value={expenseForm.toNodeId}
+                  onChange={(e) => setExpenseForm({...expenseForm, toNodeId: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select Expense Entity</option>
+                  {expenseNodes.map(node => (
+                    <option key={node._id} value={node._id}>{node.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount (₹) *
+                </label>
+                <input
+                  type="number"
+                  value={expenseForm.amount}
+                  onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  value={expenseForm.description}
+                  onChange={(e) => setExpenseForm({...expenseForm, description: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="e.g., Cleaning fee, electricity bill, etc."
+                />
+              </div>
+              
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Category
+                </label>
+                <select
+                  value={expenseForm.category}
+                  onChange={(e) => setExpenseForm({...expenseForm, category: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Select Category</option>
+                  {categories.filter(cat => cat.type === 'expense').map(category => (
+                    <option key={category._id} value={category.name}>{category.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddExpenseModal(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Add Expense
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
