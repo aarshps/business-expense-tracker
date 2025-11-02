@@ -13,7 +13,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Use Google user ID as the primary identifier, fallback to email if needed
     const userId = session.user.id || session.user.email;
+    
+    // Log the user identification for debugging
+    console.log('User identification:', { 
+      googleId: session.user.id, 
+      email: session.user.email, 
+      userId 
+    });
 
     await initializeModels();
 
@@ -44,7 +52,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use Google user ID as the primary identifier, fallback to email if needed
     const userId = session.user.id || session.user.email;
+    
+    // Log the user identification for debugging
+    console.log('User identification:', { 
+      googleId: session.user.id, 
+      email: session.user.email, 
+      userId 
+    });
+
     const { fromNodeId, toNodeId, amount, description } = await request.json();
 
     if (!fromNodeId || !toNodeId || !amount) {
