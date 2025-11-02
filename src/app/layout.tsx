@@ -30,27 +30,13 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // On page load or when changing themes, best to add inline in \`head\` to avoid FOUC
-              if (localStorage.theme === 'dark') {
-                document.documentElement.classList.add('dark')
-              } else if (localStorage.theme === 'light') {
-                document.documentElement.classList.remove('dark')
-              } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark')
-              } else {
-                document.documentElement.classList.remove('dark')
-              }
-              
-              // Watch for system theme changes
-              window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                if (localStorage.theme === 'system' || !localStorage.theme) {
-                  if (e.matches) {
-                    document.documentElement.classList.add('dark')
-                  } else {
-                    document.documentElement.classList.remove('dark')
-                  }
+              // Theme initialization script - runs before React hydrates
+              (function() {
+                var theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
                 }
-              })
+              })();
             `
           }}
         />
