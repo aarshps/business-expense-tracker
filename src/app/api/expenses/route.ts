@@ -11,6 +11,7 @@ const expenseSchema = new mongoose.Schema({
   category: String,
   amount: String,
   status: String,
+  environment: String, // Store the environment where this was created
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
     const expenseDocs = expenses.map((expense: any) => ({
       ...expense,
       userId,
+      environment: process.env.MONGODB_ENV || 'unknown',
     }));
 
     if (expenseDocs.length > 0) {
