@@ -1,7 +1,32 @@
-node_modules  
-.next  
-.env.local  
-.env  
-dev.db  
-*.db
-logs/
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+out/
+
+# Environment variables
+.env.local
+.env*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Next.js
+.next/
+coverage/
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo

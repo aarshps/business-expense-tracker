@@ -1,69 +1,44 @@
-# Hello World App
+# Business Expense Tracker
 
-A simple Hello World application built with Next.js and TypeScript.
+A Next.js application for tracking business expenses with MongoDB Atlas integration.
 
 ## Features
 
-- **Simple UI**: Displays "Hello World" on the main page
-- **Minimal Dependencies**: Only essential packages for Next.js functionality
+- Add, edit, and delete business expenses
+- Categorize expenses (office, travel, meals, utilities, marketing, software, other)
+- View all expenses in a clean, responsive interface
+- Data stored in MongoDB Atlas with environment-specific databases
 
-## Prerequisites
+## Tech Stack
 
-- Node.js (v18 or higher)
-- npm or yarn
+- Next.js 14
+- React
+- MongoDB Atlas
+- Mongoose ODM
+- Node.js
 
-## Setup Instructions
+## Environment Variables
 
-### 1. Install Dependencies
+- `MONGODB_URI`: MongoDB Atlas connection string
 
-```bash
-npm install
-```
+## Database Naming
 
-### 2. Run the Application
+The application automatically uses different database names based on the environment:
+- Development: `bet_dev`
+- Production: `bet_prod`
+- Test: `bet_test`
 
-For development:
-```bash
-npm run dev
-```
+## Scripts
 
-The application will be available at `http://localhost:3000`
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
+- `npm run lint`: Run ESLint
 
-For production build:
-```bash
-npm run build
-```
+## API Endpoints
 
-To start the production server:
-```bash
-npm start
-```
-
-## Project Structure
-
-```
-├── public/                  # Static assets
-├── src/
-│   └── app/                 # Next.js app router pages
-│       ├── globals.css      # Global styles
-│       ├── layout.tsx       # Root layout
-│       └── page.tsx         # Main page
-├── package.json             # Project dependencies and scripts
-├── README.md                # This file
-└── tsconfig.json            # TypeScript configuration
-```
-
-## Technologies Used
-
-- Next.js 16 with App Router
-- TypeScript
-- React for frontend components
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a pull request
+- `GET /api/expenses`: Get all expenses
+- `POST /api/expenses`: Create a new expense
+- `PUT /api/expenses`: Update an expense
+- `DELETE /api/expenses`: Delete an expense
+- `GET /api/health`: Health check endpoint
