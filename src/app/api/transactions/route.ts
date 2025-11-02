@@ -3,19 +3,19 @@ import { auth } from '@/lib/auth';
 import { dbConnect } from '@/lib/db';
 import mongoose from 'mongoose';
 
-// Define the expense schema
-const expenseSchema = new mongoose.Schema({
+// Define the transaction schema
+const transactionSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: String,
   description: String,
   category: String,
   amount: String,
   status: String,
-  environment: String, // Store the environment where this was created
+  environment: String,
   createdAt: { type: Date, default: Date.now },
 });
 
-const Expense = mongoose.models.Expense || mongoose.model('Expense', expenseSchema);
+const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id || session.user.email;
-    const { expenses } = await request.json();
+    const { transactions } = await request.json();
 
-    if (!userId || !expenses) {
+    if (!userId || !transactions) {
       return new Response(
         JSON.stringify({ message: 'Missing required fields' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -40,26 +40,26 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Delete existing expenses for the user
-    await Expense.deleteMany({ userId });
+    // Delete existing transactions for the user
+    await Transaction.deleteMany({ userId });
 
-    // Insert new expenses
-    const expenseDocs = expenses.map((expense: any) => ({
-      ...expense,
+    // Insert new transactions
+    const transactionDocs = transactions.map((transaction: any) => ({
+      ...transaction,
       userId,
       environment: process.env.MONGODB_ENV || 'unknown',
     }));
 
-    if (expenseDocs.length > 0) {
-      await Expense.insertMany(expenseDocs);
+    if (transactionDocs.length > 0) {
+      await Transaction.insertMany(transactionDocs);
     }
 
     return new Response(
-      JSON.stringify({ message: 'Expenses saved successfully' }),
+      JSON.stringify({ message: 'Transactions saved successfully' }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error saving expenses:', error);
+    console.error('Error saving transactions:', error);
     return new Response(
       JSON.stringify({ message: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

@@ -3,8 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 
-// Define the structure for expense data
-type Expense = {
+// Define the structure for transaction data
+type Transaction = {
   id: string;
   date: string;
   description: string;
@@ -15,44 +15,44 @@ type Expense = {
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Load expenses when session is available
+  // Load transactions when session is available
   useEffect(() => {
     if (session && session.user) {
-      const fetchExpenses = async () => {
+      const fetchTransactions = async () => {
         try {
-          const response = await fetch('/api/expenses/get');
+          const response = await fetch('/api/transactions/get');
           if (response.ok) {
             const data = await response.json();
             // Convert MongoDB _id to id for consistency
-            const formattedExpenses = data.expenses.map((expense: any) => ({
-              id: expense._id,
-              date: expense.date,
-              description: expense.description,
-              category: expense.category,
-              amount: expense.amount,
-              status: expense.status,
+            const formattedTransactions = data.transactions.map((transaction: any) => ({
+              id: transaction._id,
+              date: transaction.date,
+              description: transaction.description,
+              category: transaction.category,
+              amount: transaction.amount,
+              status: transaction.status,
             }));
-            setExpenses(formattedExpenses);
+            setTransactions(formattedTransactions);
             setHasChanges(false); // No changes initially since we just loaded
           } else {
-            console.error('Failed to fetch expenses');
+            console.error('Failed to fetch transactions');
           }
         } catch (error) {
-          console.error('Error fetching expenses:', error);
+          console.error('Error fetching transactions:', error);
         }
       };
 
-      fetchExpenses();
+      fetchTransactions();
     }
   }, [session]);
 
-  // Add a new row to the expenses
+  // Add a new row to the transactions
   const addRow = () => {
-    const newRow: Expense = {
+    const newRow: Transaction = {
       id: Date.now().toString(),
       date: '',
       description: '',
@@ -60,15 +60,15 @@ export default function Home() {
       amount: '',
       status: 'Pending',
     };
-    setExpenses([...expenses, newRow]);
+    setTransactions([...transactions, newRow]);
     setHasChanges(true);
   };
 
   // Update cell value
-  const updateCell = (rowIndex: number, field: keyof Expense, value: string) => {
-    const updatedExpenses = [...expenses];
-    updatedExpenses[rowIndex] = { ...updatedExpenses[rowIndex], [field]: value };
-    setExpenses(updatedExpenses);
+  const updateCell = (rowIndex: number, field: keyof Transaction, value: string) => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[rowIndex] = { ...updatedTransactions[rowIndex], [field]: value };
+    setTransactions(updatedTransactions);
     setHasChanges(true);
   };
 
@@ -83,23 +83,23 @@ export default function Home() {
 
   // Toggle select all
   const toggleSelectAll = () => {
-    if (selectedRows.length === expenses.length && expenses.length > 0) {
+    if (selectedRows.length === transactions.length && transactions.length > 0) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(expenses.map((_, index) => index));
+      setSelectedRows(transactions.map((_, index) => index));
     }
   };
 
   // Delete selected rows
   const deleteSelectedRows = () => {
-    setExpenses(expenses.filter((_, index) => !selectedRows.includes(index)));
+    setTransactions(transactions.filter((_, index) => !selectedRows.includes(index)));
     setSelectedRows([]);
     setHasChanges(true);
   };
 
-  // Calculate total expenses
-  const totalExpenses = expenses.reduce((sum, expense) => {
-    const amount = parseFloat(expense.amount) || 0;
+  // Calculate total transactions
+  const totalTransactions = transactions.reduce((sum, transaction) => {
+    const amount = parseFloat(transaction.amount) || 0;
     return sum + amount;
   }, 0).toFixed(2);
 
@@ -118,28 +118,28 @@ export default function Home() {
       <div className="flex-grow flex flex-col items-center justify-center p-6 bg-gray-50">
         <div className="max-w-2xl w-full bg-white rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-            Business Expense Tracker
+            Business Transactions Tracker
           </h1>
           <p className="text-lg text-gray-600 mb-8 text-center">
-            Track and manage your business expenses efficiently
+            Track and manage your business transactions efficiently
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-blue-800 mb-2">Track Expenses</h2>
-              <p className="text-gray-700">Easily log all your business expenses with date, description, and amount.</p>
+              <h2 className="text-xl font-semibold text-blue-800 mb-2">Track Transactions</h2>
+              <p className="text-gray-700">Easily log all your business transactions with date, description, and amount.</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg">
               <h2 className="text-xl font-semibold text-green-800 mb-2">Categorize</h2>
-              <p className="text-gray-700">Organize expenses by category for better financial analysis.</p>
+              <p className="text-gray-700">Organize transactions by category for better financial analysis.</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-purple-800 mb-2">Receipts</h2>
-              <p className="text-gray-700">Attach digital receipts to each expense for proper documentation.</p>
+              <h2 className="text-xl font-semibold text-purple-800 mb-2">Reports</h2>
+              <p className="text-gray-700">Generate detailed reports and export data for tax purposes.</p>
             </div>
             <div className="bg-yellow-50 p-4 rounded-lg">
-              <h2 className="text-xl font-semibold text-yellow-800 mb-2">Reports</h2>
-              <p className="text-gray-700">Generate detailed reports and export data for tax purposes.</p>
+              <h2 className="text-xl font-semibold text-yellow-800 mb-2">Financial Overview</h2>
+              <p className="text-gray-700">Get a complete picture of your business financials.</p>
             </div>
           </div>
           
@@ -156,19 +156,19 @@ export default function Home() {
     <div className="flex-grow p-4 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Expense Tracker Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Transactions Tracker Dashboard</h1>
           <p className="text-gray-800">Welcome, {session.user.name}</p>
         </div>
         
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="flex justify-between items-center p-4 border-b bg-gray-100">
-            <h2 className="text-xl font-semibold text-gray-900">Expenses</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Transactions</h2>
             <div className="flex space-x-2">
               <button 
                 onClick={addRow}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               >
-                Add Expense
+                Add Transaction
               </button>
               <button
                 onClick={deleteSelectedRows}
@@ -193,7 +193,7 @@ export default function Home() {
                     <input
                       type="checkbox"
                       onChange={toggleSelectAll}
-                      checked={selectedRows.length === expenses.length && expenses.length > 0}
+                      checked={selectedRows.length === transactions.length && transactions.length > 0}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                     />
                   </th>
@@ -205,16 +205,16 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {expenses.length === 0 ? (
+                {transactions.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="border border-gray-300 px-4 py-4 text-center text-gray-500">
-                      No expenses added yet. Click "Add Expense" to get started.
+                      No transactions added yet. Click "Add Transaction" to get started.
                     </td>
                   </tr>
                 ) : (
-                  expenses.map((expense, rowIndex) => (
+                  transactions.map((transaction, rowIndex) => (
                     <tr 
-                      key={expense.id} 
+                      key={transaction.id} 
                       className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${selectedRows.includes(rowIndex) ? 'bg-blue-100' : ''}`}
                     >
                       <td className="border border-gray-300 px-4 py-2 w-12">
@@ -288,12 +288,12 @@ export default function Home() {
                 <button 
                   onClick={async () => {
                     try {
-                      const response = await fetch('/api/expenses', {
+                      const response = await fetch('/api/transactions', {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ expenses }),
+                        body: JSON.stringify({ transactions }),
                       });
 
                       if (response.ok) {
@@ -304,7 +304,7 @@ export default function Home() {
                         alert(`Error saving changes: ${data.message}`);
                       }
                     } catch (error) {
-                      console.error('Error saving expenses:', error);
+                      console.error('Error saving transactions:', error);
                       alert('Error saving changes. Please try again.');
                     }
                   }}
@@ -319,9 +319,9 @@ export default function Home() {
                 </button>
               </div>
               <div className="font-medium text-gray-800">
-                <span>Total Expenses: </span>
+                <span>Total Transactions: </span>
                 <span className="font-bold text-gray-900">
-                  ₹{totalExpenses}
+                  ₹{totalTransactions}
                 </span>
               </div>
             </div>

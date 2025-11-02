@@ -3,8 +3,8 @@ import { auth } from '@/lib/auth';
 import { dbConnect } from '@/lib/db';
 import mongoose from 'mongoose';
 
-// Define the expense schema
-const expenseSchema = new mongoose.Schema({
+// Define the transaction schema
+const transactionSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   date: String,
   description: String,
@@ -15,7 +15,7 @@ const expenseSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const Expense = mongoose.models.Expense || mongoose.model('Expense', expenseSchema);
+const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,15 +39,15 @@ export async function GET(request: NextRequest) {
 
     await dbConnect();
 
-    // Fetch expenses for the user
-    const userExpenses = await Expense.find({ userId }).sort({ createdAt: 1 });
+    // Fetch transactions for the user
+    const userTransactions = await Transaction.find({ userId }).sort({ createdAt: 1 });
 
     return new Response(
-      JSON.stringify({ expenses: userExpenses }),
+      JSON.stringify({ transactions: userTransactions }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error fetching expenses:', error);
+    console.error('Error fetching transactions:', error);
     return new Response(
       JSON.stringify({ message: 'Internal server error' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
