@@ -1,0 +1,62 @@
+.container {
+  width: 100%;
+}
+
+.centerContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937; /* gray-800 equivalent */
+  margin: 0;
+}
+
+.description {
+  margin-top: 0.5rem;
+  color: #4b5563; /* gray-600 equivalent */
+}
+
+.signinButton {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signinButton:hover {
+  background-color: #3367d6;
+}
+
+.googleLogo {
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 1.25rem;
+}

@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "serverless": true
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/user/dbName",
+      "dest": "/api/user/dbName.js"
+    },
+    {
+      "src": "/api/auth/(.*)",
+      "dest": "/api/auth/[...nextauth].js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "$0",
+      "continue": true
+    }
+  ],
+  "github": {
+    "enabled": true,
+    "autoJobCancelation": true
+  }
+}
