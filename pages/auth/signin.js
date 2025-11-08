@@ -10,46 +10,42 @@ export default function SignIn({ providers }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* Google-style header */}
-      <header className={styles.header}>
-        <div className={styles.logoContainer}>
-          <div className={styles.googleLogoIcon}></div>
-          <span className={styles.logoText}>Business Expense Tracker</span>
-        </div>
-      </header>
-
       <main className={styles.main}>
-        <div className={styles.card}>
-          <div className={styles.cardContent}>
-            <div className={styles.avatar}></div>
-            <h1 className={styles.title}>Sign in</h1>
-            <p className={styles.subtitle}>Use your Google Account</p>
+        <div className={styles.authCard}>
+          <div className={styles.logoSection}>
+            <div className={styles.appLogo}>💼</div>
+            <h1 className={styles.appTitle}>Business Expense Tracker</h1>
+            <p className={styles.appSubtitle}>Track and manage your business expenses seamlessly</p>
+          </div>
+
+          <div className={styles.signInSection}>
+            <h2 className={styles.signInTitle}>Welcome Back</h2>
+            <p className={styles.signInSubtitle}>Sign in to access your expense dashboard</p>
 
             {Object.values(providers).map((provider) => (
               <div key={provider.name} className={styles.provider}>
                 <button
-                  className={styles.googleButton}
+                  className={styles.signInButton}
                   onClick={() => signIn(provider.id, { callbackUrl: '/' })}
                 >
-                  <div className={styles.buttonLogo}></div>
-                  <span className={styles.buttonText}>Sign in with Google</span>
+                  <div className={styles.googleIcon}>/google</div>
+                  <span className={styles.buttonText}>Continue with Google</span>
                 </button>
               </div>
             ))}
 
-            <div className={styles.terms}>
-              <p>Not your computer? Use Guest mode to sign in privately.</p>
-              <a href="#" className={styles.learnMore}>Learn more</a>
+            <div className={styles.divider}>
+              <span className={styles.dividerText}>or</span>
             </div>
-          </div>
 
-          <div className={styles.cardFooter}>
-            <div className={styles.footerLinks}>
-              <a href="#" className={styles.footerLink}>Help</a>
-              <a href="#" className={styles.footerLink}>Privacy</a>
-              <a href="#" className={styles.footerLink}>Terms</a>
+            <div className={styles.footerNote}>
+              <p>By signing in, you agree to our <a href="#" className={styles.link}>Terms of Service</a> and <a href="#" className={styles.link}>Privacy Policy</a>.</p>
             </div>
           </div>
+        </div>
+
+        <div className={styles.footer}>
+          <p>© 2025 Business Expense Tracker. All rights reserved.</p>
         </div>
       </main>
     </div>
