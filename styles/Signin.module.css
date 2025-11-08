@@ -33,8 +33,7 @@
   margin-bottom: 2rem;
 }
 
-.appLogo {
-  font-size: 3.5rem;
+.appLogoImage {
   margin: 0 auto 1rem;
   display: block;
   animation: float 3s ease-in-out infinite;

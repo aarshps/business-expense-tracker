@@ -18,7 +18,7 @@ export default function Home() {
         <Head>
           <title>Business Expense Tracker</title>
           <meta name="description" content="Track your business expenses" />
-          <link rel="icon" href="/favicon.ico" />
+          <link rel="icon" href="/logo/round-logo.png" />
         </Head>
         
         <div className={styles.centerContent}>
@@ -44,7 +44,7 @@ export default function Home() {
       <Head>
         <title>Business Expense Tracker</title>
         <meta name="description" content="Track your business expenses" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo/round-logo.png" />
       </Head>
 
       <Sidebar>

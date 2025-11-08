@@ -29,7 +29,7 @@ export default function Sidebar({ children }: SidebarProps) {
     // Fetch the database name from the API when the session is available
     if (status === 'authenticated' && sessionData) {
       console.log('Session data in useEffect:', sessionData);
-      
+
       const fetchDbName = async () => {
         try {
           const response = await fetch('/api/user/dbName');
@@ -75,7 +75,7 @@ export default function Sidebar({ children }: SidebarProps) {
     if (activeItem === 'transactions') {
       return <Transactions />;
     }
-    
+
     // For dashboard or any other default view, render the children
     return children;
   };
@@ -84,11 +84,21 @@ export default function Sidebar({ children }: SidebarProps) {
     <div className={styles.container}>
       <aside className={styles.sidebar}>
         
+        <div className={styles.logoSection}>
+          <Image
+            src="/logo/side-nav-logo.png"
+            alt="Business Expense Tracker"
+            width={150}
+            height={50}
+            className={styles.navLogo}
+          />
+        </div>
+
         <div className={styles.userSection}>
           <div className={styles.userSectionContent}>
             <div className={styles.userAvatar}>
-              <Image 
-                src={sessionData?.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(sessionData?.user?.name || 'User')}&background=random`} 
+              <Image
+                src={sessionData?.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(sessionData?.user?.name || 'User')}&background=random`}
                 alt={sessionData?.user?.name || 'User'}
                 width={32}
                 height={32}
@@ -102,7 +112,7 @@ export default function Sidebar({ children }: SidebarProps) {
             </div>
           </div>
         </div>
-        
+
         <nav className={styles.nav}>
           <ul className={styles.menuList}>
             {menuItems.map((item) => (
@@ -120,18 +130,18 @@ export default function Sidebar({ children }: SidebarProps) {
             ))}
           </ul>
         </nav>
-        
+
         <div className={styles.bottomSection}>
           <div className={styles.dbInfo}>
             <FiDatabase className={styles.icon} />
-            <span 
-              className={styles.dbName} 
+            <span
+              className={styles.dbName}
               title={dbName || 'User database not found'}
             >
-              {dbName ? 
-                (dbName.length > 20 ? 
-                  dbName.substring(0, 17) + '...' : 
-                  dbName) 
+              {dbName ?
+                (dbName.length > 20 ?
+                  dbName.substring(0, 17) + '...' :
+                  dbName)
                 : 'Loading...'}
             </span>
           </div>
@@ -139,9 +149,9 @@ export default function Sidebar({ children }: SidebarProps) {
             <FiGlobe className={styles.icon} />
             <span className={styles.envValue}>{process.env.NODE_ENV || 'development'}</span>
           </div>
-          
+
           <div className={styles.bottomButtons}>
-            <button 
+            <button
               className={styles.logoutButton}
               onClick={() => signOut({ callbackUrl: '/' })}
             >
@@ -151,7 +161,7 @@ export default function Sidebar({ children }: SidebarProps) {
           </div>
         </div>
       </aside>
-      
+
       <main className={styles.main}>
         {renderContent()}
       </main>

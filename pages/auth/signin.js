@@ -1,5 +1,6 @@
 import { getProviders, signIn } from 'next-auth/react';
 import Head from 'next/head';
+import Image from 'next/image';
 import styles from '../../styles/Signin.module.css';
 
 export default function SignIn({ providers }) {
@@ -7,13 +8,19 @@ export default function SignIn({ providers }) {
     <div className={styles.container}>
       <Head>
         <title>Sign in - Business Expense Tracker</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo/round-logo.png" />
       </Head>
 
       <main className={styles.main}>
         <div className={styles.authCard}>
           <div className={styles.logoSection}>
-            <div className={styles.appLogo}>💼</div>
+            <Image 
+              src="/logo/round-logo.png" 
+              alt="Business Expense Tracker" 
+              className={styles.appLogoImage}
+              width={80}
+              height={80}
+            />
             <h1 className={styles.appTitle}>Business Expense Tracker</h1>
             <p className={styles.appSubtitle}>Track and manage your business expenses seamlessly</p>
           </div>
