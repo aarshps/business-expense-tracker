@@ -21,6 +21,7 @@ export default function Sidebar({ children }: SidebarProps) {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: FiHome },
+    { id: 'transactions', label: 'Transactions', icon: FiDollarSign },
   ];
 
   useEffect(() => {
