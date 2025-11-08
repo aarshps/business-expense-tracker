@@ -55,7 +55,7 @@ const Transactions = () => {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: 15  // Reduced from 20 to allow for better responsive display
+    itemsPerPage: 15,  // Reduced from 20 to allow for better responsive display
   });
 
   // Load transactions from the database on component mount or when filters/pagination change
@@ -163,7 +163,7 @@ const Transactions = () => {
   };
 
   return (
-    <Page title="Transactions" subtitle="Track and manage all transactions">
+    <div className={styles.transactionPage}>
       <div className={styles.transactionContent}>
         {/* Action Buttons Section */}
         <div className={styles.buttonsContainer}>
@@ -247,7 +247,7 @@ const Transactions = () => {
         transactions={transactions}
       />
     </div>
-    </Page>
+    </div>
   );
 };
 

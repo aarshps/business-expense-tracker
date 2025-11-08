@@ -50,8 +50,8 @@ export default function Home() {
         <link rel="icon" type="image/png" sizes="32x32" href="/logo/round-logo.png" />
       </Head>
 
-      <Sidebar>
-        <Page title="Dashboard" subtitle="Welcome to your Business Expense Tracker">
+      <Sidebar title="Dashboard" subtitle="Welcome to your Business Expense Tracker">
+        <Page>
           <p>Welcome to your Business Expense Tracker</p>
         </Page>
       </Sidebar>

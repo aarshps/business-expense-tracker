@@ -1,24 +1,36 @@
-.container {
-  display: flex;
-  min-height: 100vh;
-  height: 100vh; /* Explicitly set height to viewport */
-  overflow: hidden; /* Prevent any overflow at container level */
-}
-
-.sidebar {
-  width: 200px;
-  background-color: #f9fafb; /* gray.50 */
-  border-right: 1px solid #e5e7eb; /* gray.200 */
+.layoutContainer {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
-  height: 100vh; /* Ensure sidebar doesn't cause overflow */
+}
+
+.topHeader {
+  height: 74px; /* Match the sidebar logo section height for consistency */
+  background-color: #ffffff; /* Match the logo's white background */
+  display: flex;
+  align-items: center;
+  padding: 0; /* Remove all padding since only logo is present */
+}
+
+.headerContent {
+  display: flex;
+  justify-content: flex-start; /* Align to the left */
+  align-items: center;
+  width: 100%;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  width: 200px; /* Match the sidebar width to align logo with sidebar */
+  justify-content: center; /* Center the logo within this space */
 }
 
 .logoSection {
-  padding: 0.75rem 0.5rem 0.75rem;
+  padding: 0.75rem 0.5rem; /* Reduce padding */
   text-align: center;
-  border-bottom: 1px solid #e5e7eb;
   background-color: #ffffff; /* Match the logo's white background */
 }
 
@@ -30,6 +42,48 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 8px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.headerTitleSection {
+  flex: 1;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.headerTitle {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #5a2c28; /* --brand-color-middle-dark */
+  margin: 0 0 0.25rem 0;
+}
+
+.headerSubtitle {
+  font-size: 0.875rem;
+  color: #743a34; /* --brand-color-middle */
+  margin: 0;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #ffffff; /* White background */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 0; /* No need to add extra padding since header is separate */
+}
+
+.mainLayout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 
@@ -49,14 +103,7 @@
   align-items: center;
   padding: 0.75rem 1rem;
   margin-top: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
   margin-bottom: 0.75rem;
-}
-
-.userSectionContent {
-  display: flex;
-  align-items: center;
-  flex: 1;
 }
 
 .userAvatar {
@@ -88,7 +135,7 @@
 
 .userName {
   font-weight: 600;
-  color: #111827;
+  color: #5a2c28; /* --brand-color-middle-dark */
   font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
@@ -97,7 +144,7 @@
 
 .userEmail {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #743a34; /* --brand-color-middle */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -126,7 +173,7 @@
   border-radius: 0.5rem;
   background-color: transparent;
   border: none;
-  color: #374151; /* gray.700 */
+  color: #743a34; /* --brand-color-middle */
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -135,13 +182,13 @@
 }
 
 .menuButton:hover {
-  background-color: #f3f4f6; /* gray.100 */
-  color: #1f2937;
+  background-color: rgba(116, 58, 52, 0.1); /* light version of --brand-color-middle */
+  color: var(--brand-color-middle);
 }
 
 .menuButton.active {
-  background-color: #e5e7eb; /* gray.200 */
-  color: #111827; /* gray.900 */
+  background-color: rgba(116, 58, 52, 0.15); /* slightly more opaque version of --brand-color-middle */
+  color: #5a2c28; /* --brand-color-middle-dark */
   font-weight: 600;
 }
 
@@ -153,7 +200,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4b5563;
+  color: #743a34; /* --brand-color-middle in hex */
+  transition: color 0.2s ease;
+}
+
+.menuButton:hover .icon {
+  color: var(--brand-color-middle);
+}
+
+.menuButton.active .icon {
+  color: var(--brand-color-middle);
 }
 
 .contentWrapper {
@@ -193,36 +249,20 @@
   gap: 0.3rem;
 }
 
-.bottomSection {
-  padding: 0 0.5rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  margin-top: auto;
-}
-
-.bottomButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
 
 
 .dbInfo {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background-color: #f3f4f6;
   font-size: 0.75rem;
-  color: #4b5563;
+  color: #743a34; /* --brand-color-middle */
   gap: 0.75rem;
 }
 
 .dbName {
   font-weight: 500;
-  color: #111827;
+  color: #5a2c28; /* --brand-color-middle-dark */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -234,17 +274,15 @@
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background-color: #f3f4f6;
   font-size: 0.75rem;
-  color: #4b5563;
+  color: #743a34; /* --brand-color-middle */
   gap: 0.75rem;
   margin-top: 0.2rem;
 }
 
 .envValue {
   font-weight: 500;
-  color: #111827;
+  color: #5a2c28; /* --brand-color-middle-dark */
 }
 
 .toggleButton {
@@ -288,5 +326,21 @@
 
 .logoutButton .icon {
   color: white;
+}
+
+/* Brand color for other icons in the sidebar */
+.dbInfo .icon,
+.envInfo .icon {
+  color: var(--brand-color-middle);
+}
+
+.logoutButton:hover .icon {
+  color: white; /* Keep white on hover */
+}
+
+.mainContentArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
 }
 

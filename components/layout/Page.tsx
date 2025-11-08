@@ -1,18 +1,16 @@
 import React from 'react';
 import styles from './Page.module.css';
-import Header from './Header';
 
 interface PageProps {
-  title: string;
-  subtitle?: string;
+  title?: string;  // No longer used since header is in sidebar
+  subtitle?: string; // No longer used since header is in sidebar
   children: React.ReactNode;
-  actions?: React.ReactNode;
+  actions?: React.ReactNode; // No longer used since header is in sidebar
 }
 
-const Page: React.FC<PageProps> = ({ title, subtitle, children, actions }) => {
+const Page: React.FC<PageProps> = ({ children }) => {
   return (
     <div className={styles.pageContainer}>
-      <Header title={title} subtitle={subtitle} actions={actions} />
       <div className={styles.pageContent}>
         {children}
       </div>
