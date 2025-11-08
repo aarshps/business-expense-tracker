@@ -19,6 +19,18 @@ A Next.js application for tracking business expenses with individual database is
 - Transaction management with multiple action types
 - Multi-entry transaction creation for buffer amounts (3 entries)
 - Dual-entry transaction creation for worker transfers (2 linked entries)
+- Interactive Dashboard with financial summaries
+- Summary cards for quick financial insights
+- Investor investment tracking and breakdown
+- Expense tracking by spender
+- Worker balance monitoring
+- Comprehensive logging system
+- Interactive Dashboard with financial summaries
+- Summary cards for quick financial insights
+- Investor investment tracking and breakdown
+- Expense tracking by spender
+- Worker balance monitoring
+- Comprehensive logging system
 
 ## Database Naming Convention
 
@@ -121,6 +133,17 @@ For comprehensive information about each transaction type and business logic, pl
 - [Investor Add Expense Flow](./docs/investor-add-expense-flow.md) - Detailed business flow for investor expense transactions
 - [Transaction Rules](./docs/transaction-rules.md) - Comprehensive business rules and validation
 - [Database Schema](./docs/database-schema.md) - Technical database schema and structure details
+- [Comprehensive Transaction Documentation](./docs/comprehensive-transaction-documentation.md) - Detailed documentation of transaction logic, folio types, and column descriptions for all scenarios
+
+## Additional Documentation
+For information about other features and components, see:
+
+- [Dashboard Feature](./docs/dashboard-feature.md) - Overview of the Dashboard functionality and UI
+- [Summary Card Component](./docs/summary-card-component.md) - Documentation for the SummaryCard UI component
+- [Dashboard API Endpoints](./docs/dashboard-api-endpoints.md) - API documentation for dashboard endpoints
+- [Logging System](./docs/logging-system.md) - Information about the application's logging implementation
+- [Sidebar Navigation](./docs/sidebar-navigation.md) - Details about the sidebar navigation system
+- [Comprehensive Transaction Documentation](./docs/comprehensive-transaction-documentation.md) - Detailed documentation of transaction logic, folio types, and column descriptions for all scenarios
 
 ## Architecture
 
@@ -150,6 +173,47 @@ For Google OAuth to work properly, you need to configure your Google Cloud Conso
    - `https://your-vercel-domain.vercel.app/api/auth/callback/google` (for production)
 
 Make sure your `NEXTAUTH_URL` environment variable matches the domain you're deploying to.
+
+## Dashboard Feature
+
+The Dashboard provides a comprehensive overview of your financial data with key metrics and insights:
+
+### Summary Cards
+- Total Investments: Shows the cumulative amount invested by all investors
+- Investment Breakdown: Displays individual investor contributions (Anup, Aneshwar) with color-coded indicators
+- Expense Tracking: Shows total expenses categorized by spender
+- Worker Balances: Displays remaining funds for each worker
+
+### Data Visualization
+- Interactive summary cards with hover effects
+- Color-coded indicators for quick visual recognition
+- Real-time data fetching from the user's database
+- Responsive layout that adapts to different screen sizes
+
+### Technical Implementation
+- Built with React and TypeScript
+- Uses CSS Modules for styling
+- Fetches data from `/api/dashboard/investor-investments` endpoint
+- Implements loading states for better user experience
+- Responsive design with two-column layout for tables
+
+## API Routes
+
+- `/api/auth/[...nextauth]` - NextAuth.js authentication routes
+- `/api/user/dbName` - Retrieves the user's database name based on email
+- `/api/health` - Health check endpoint
+- `/api/transactions` - Manages transaction records for each user's database
+- `/api/dashboard/investor-investments` - Fetches investment and expense data for dashboard display
+
+## Logging System
+
+A comprehensive logging system has been implemented in `lib/logger.js` with:
+
+- INFO, ERROR, and DEBUG log levels
+- Timestamped entries for audit trails
+- File-based logging to `logs/app.log`
+- Console output for development
+- Proper error handling and fallbacks
 
 ## Troubleshooting
 
