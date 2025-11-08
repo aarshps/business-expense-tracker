@@ -8,7 +8,7 @@ export default function SignIn({ providers }) {
     <div className={styles.container}>
       <Head>
         <title>Sign in - Business Expense Tracker</title>
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/favicon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/logo/round-logo.png" />
       </Head>
 
@@ -21,6 +21,7 @@ export default function SignIn({ providers }) {
               className={styles.appLogoImage}
               width={80}
               height={80}
+              unoptimized
             />
             <h1 className={styles.appTitle}>Business Expense Tracker</h1>
             <p className={styles.appSubtitle}>Track and manage your business expenses seamlessly</p>

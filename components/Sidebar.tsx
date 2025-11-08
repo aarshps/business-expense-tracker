@@ -91,6 +91,7 @@ export default function Sidebar({ children }: SidebarProps) {
             width={150}
             height={50}
             className={styles.navLogo}
+            unoptimized
           />
         </div>
 
