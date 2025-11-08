@@ -42,7 +42,7 @@
 .googleButton {
   width: 100%;
   padding: 0.75rem;
-  background-color: #93c5fd; /* pastel blue-300 */
+  background-color: #4285f4; /* Google blue */
   color: white;
   border: none;
   border-radius: 0.375rem;
@@ -53,7 +53,7 @@
 }
 
 .googleButton:hover {
-  background-color: #60a5fa; /* pastel blue-400 */
+  background-color: #3367d6; /* Darker Google blue */
 }
 
 .googleLogo {

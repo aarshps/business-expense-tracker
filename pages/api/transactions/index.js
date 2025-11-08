@@ -1,0 +1,84 @@
+import dbConnect from '../../../lib/dbConnect';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
+import { generateDbName, getIdentifierFromSession } from '../../../lib/dbNameUtils';
+import mongoose from 'mongoose';
+
+// Define the transaction schema
+const transactionSchema = {
+  id: Number, // Changed to Number for auto-incrementing
+  type: String,
+  date: String,
+  amount: Number,
+  folio_type: String,
+  investor: String,
+  worker: String,
+  action_type: String,
+  link_id: Number, // Changed to Number
+  notes: String,
+  createdAt: { type: Date, default: Date.now },
+  userId: String
+};
+
+export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+  
+  if (!session) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    // Generate the database name using the same utility as authentication
+    const identifier = getIdentifierFromSession(session.user);
+    const dbName = generateDbName(identifier);
+
+    // Connect to the user's specific database
+    const dbConnection = await dbConnect(dbName);
+    
+    // Create the Transaction model for this specific database
+    const Transaction = dbConnection.model(
+      'Transaction', 
+      new mongoose.Schema(transactionSchema),
+      'transactions' // collection name
+    );
+
+    if (req.method === 'POST') {
+      const { type, date, amount, folio_type, investor, worker, action_type, link_id, notes } = req.body;
+
+      // Find highest existing ID and increment for new transaction
+      const existingTransactions = await Transaction.find({}).sort({ id: -1 }).limit(1);
+      const highestId = existingTransactions.length > 0 ? existingTransactions[0].id : 0;
+      const newId = highestId + 1;
+
+      const newTransaction = new Transaction({
+        id: newId,
+        type,
+        date,
+        amount: amount ? parseFloat(amount) : null, // Make amount null when empty
+        folio_type,
+        investor,
+        worker,
+        action_type,
+        link_id: link_id || null, // Use null if link_id is empty
+        notes,
+        userId: session.user.id
+      });
+
+      await newTransaction.save();
+
+      res.status(201).json({ 
+        message: 'Transaction saved successfully', 
+        transaction: newTransaction 
+      });
+    } else if (req.method === 'GET') {
+      // Fetch all transactions for this user
+      const transactions = await Transaction.find({ userId: session.user.id }).sort({ createdAt: -1 });
+      res.status(200).json(transactions);
+    } else {
+      res.status(405).json({ message: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('Error handling transaction:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}

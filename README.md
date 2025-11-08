@@ -16,6 +16,8 @@ A Next.js application for tracking business expenses with individual database is
 - User-specific database naming convention
 - Secure session management
 - Automatic logout after 10 minutes of inactivity
+- Transaction management with multiple action types
+- Multi-entry transaction creation for buffer amounts
 
 ## Database Naming Convention
 
@@ -96,6 +98,100 @@ The application is pre-configured for Vercel deployment with:
 - `/api/auth/[...nextauth]` - NextAuth.js authentication routes
 - `/api/user/dbName` - Retrieves the user's database name based on email
 - `/api/health` - Health check endpoint
+- `/api/transactions` - Manages transaction records for each user's database
+
+## Transactions Feature
+
+The Transactions feature provides multiple ways to record business activities:
+
+### Action Types
+- **Add Buffer Amount**: Creates 3 entries (2 investor entries with credit/debit and 1 worker entry)
+- **Worker Add Expense**: Records expenses associated with workers
+- **Investor Add Expense**: Records expenses associated with investors
+- **Worker Transfer**: Records transfers between workers
+
+### Buffer Amount Transaction Logic
+When adding a buffer amount, the system creates 3 separate entries in the database with specific rules:
+
+1. **Investor Folio Credit Entry**:
+   - Type: "credit"
+   - Date: Form date value
+   - Amount: Form amount value
+   - Folio Type: "investor"
+   - Investor: Form investor value
+   - Worker: Empty (no worker reference needed)
+   - Action Type: Empty
+   - Link ID: Empty
+
+2. **Investor Folio Debit Entry**:
+   - Type: "debit"
+   - Date: Form date value
+   - Amount: Form amount value
+   - Folio Type: "investor"
+   - Investor: Form investor value
+   - Worker: Empty (no worker reference needed)
+   - Action Type: Empty
+   - Link ID: Empty
+
+3. **Worker Folio Credit Entry** (linked to investor debit):
+   - Type: "credit"
+   - Date: Empty (since linked to investor debit)
+   - Amount: Empty (since linked to investor debit)
+   - Folio Type: "worker"
+   - Investor: Empty (since linked to investor debit)
+   - Worker: Form worker value
+   - Action Type: Empty
+   - Link ID: References the ID of the investor debit entry
+
+### Business Rules
+
+#### Golden Rule: Transaction Immutability
+- **NO TRANSACTIONS ARE EDITABLE**: Once a transaction is recorded, it cannot be modified
+- Only INSERT operations are allowed in the transactions table
+- If corrections are needed, new transactions must be added that offset the original transaction
+- This ensures complete transaction history and audit trail integrity
+
+#### Folio Type Behavior
+- **Investor Folio**: Records transactions related to investors
+  - Credit entries: Increase investor balance
+  - Debit entries: Decrease investor balance
+  - Date and amount fields are always populated for direct entries
+  - Worker field is empty for all investor folio entries
+
+- **Worker Folio**: Records transactions related to workers
+  - Credit entries: Increase worker balance or represent inflows
+  - Debit entries: Decrease worker balance or represent outflows
+  - When linked to another transaction (via link_id), date and amount are empty
+  - Investor field is empty when linked to another transaction
+
+#### Transaction Linking
+- When transactions are linked using link_id:
+  - Date and amount fields in the linked transaction become empty
+  - The linked transaction inherits date and amount from the referenced transaction
+  - Investor field in the linked transaction becomes empty when linking to an investor transaction
+
+#### Type Column Behavior
+- **"credit"**: Row displayed with light pastel green background
+- **"debit"**: Row displayed with light pastel red background
+- Other types: Row displayed with normal background
+
+#### Auto-Incrementing IDs
+- All transactions have auto-incrementing IDs starting from 1
+- When multiple transactions are created together (e.g., Buffer Amount), they get consecutive IDs
+- Link ID references use the actual auto-generated IDs from the database
+
+### Database Structure
+Each transaction is stored with the following fields:
+- id: Auto-incrementing unique identifier for the transaction
+- type: Type of transaction (credit, debit, Worker Expense, Investor Expense, Worker Transfer)
+- date: Date of the transaction (empty when linked to another transaction)
+- amount: Amount value (empty when linked to another transaction)
+- folio_type: Type of folio (investor, worker, buffer)
+- investor: Associated investor (empty when linked to another transaction)
+- worker: Associated worker (if applicable)
+- action_type: Action type (expense, transfer, empty for credit/debit)
+- link_id: Link identifier (references another transaction ID, or empty)
+- notes: Additional notes
 
 ## Architecture
 
