@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiHome, FiDollarSign, FiBarChart2, FiSettings, FiUser, FiLogOut, FiDatabase, FiGlobe } from 'react-icons/fi';
+import { FiHome, FiDollarSign, FiBarChart2, FiUser, FiLogOut, FiDatabase, FiGlobe } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import styles from './Sidebar.module.css';
@@ -21,7 +21,6 @@ export default function Sidebar({ children }: SidebarProps) {
 
   const menuItems: MenuItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: FiHome },
-    { id: 'settings', label: 'Settings', icon: FiSettings },
   ];
 
   useEffect(() => {
