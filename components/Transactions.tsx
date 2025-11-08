@@ -16,7 +16,6 @@ type Transaction = {
   worker: string;
   action_type: string;
   link_id: number;
-  notes: string;
   createdAt?: string;
 };
 
@@ -58,25 +57,43 @@ const Transactions = () => {
     setShowWorkerTransferForm(false);
   };
 
+  // Function to reload transactions from the server
+  const reloadTransactions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/transactions');
+      if (response.ok) {
+        const data = await response.json();
+        setTransactions(data);
+      } else {
+        console.error('Failed to fetch transactions');
+      }
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Handler functions for each form
-  const handleBufferAmountSave = (newTransactions: Transaction[]) => {
-    setTransactions([...transactions, ...newTransactions]);
+  const handleBufferAmountSave = async (newTransactions: Transaction[]) => {
     setShowBufferAmountForm(false);
+    await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
-  const handleWorkerAddExpenseSave = (newTransaction: Transaction) => {
-    setTransactions([...transactions, newTransaction]);
+  const handleWorkerAddExpenseSave = async (newTransaction: Transaction) => {
     setShowWorkerAddExpenseForm(false);
+    await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
-  const handleInvestorAddExpenseSave = (newTransaction: Transaction) => {
-    setTransactions([...transactions, newTransaction]);
+  const handleInvestorAddExpenseSave = async (newTransaction: Transaction) => {
     setShowInvestorAddExpenseForm(false);
+    await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
-  const handleWorkerTransferSave = (newTransaction: Transaction) => {
-    setTransactions([...transactions, newTransaction]);
+  const handleWorkerTransferSave = async (newTransactions: Transaction[]) => {
     setShowWorkerTransferForm(false);
+    await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
   return (
@@ -131,7 +148,6 @@ const Transactions = () => {
         <AddBufferAmountForm 
           onClose={() => setShowBufferAmountForm(false)} 
           onSave={handleBufferAmountSave}
-          isSaving={isSaving}
         />
       )}
 
@@ -139,7 +155,6 @@ const Transactions = () => {
         <WorkerAddExpenseForm 
           onClose={() => setShowWorkerAddExpenseForm(false)} 
           onSave={handleWorkerAddExpenseSave}
-          isSaving={isSaving}
         />
       )}
 
@@ -147,7 +162,6 @@ const Transactions = () => {
         <InvestorAddExpenseForm 
           onClose={() => setShowInvestorAddExpenseForm(false)} 
           onSave={handleInvestorAddExpenseSave}
-          isSaving={isSaving}
         />
       )}
 
@@ -155,7 +169,6 @@ const Transactions = () => {
         <WorkerTransferForm 
           onClose={() => setShowWorkerTransferForm(false)} 
           onSave={handleWorkerTransferSave}
-          isSaving={isSaving}
         />
       )}
 
@@ -178,7 +191,6 @@ const Transactions = () => {
                 <th className={styles.tableHeaderCell}>Worker</th>
                 <th className={styles.tableHeaderCell}>Action Type</th>
                 <th className={styles.tableHeaderCell}>Link ID</th>
-                <th className={styles.tableHeaderCell}>Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -214,7 +226,6 @@ const Transactions = () => {
                         <td className={styles.tableCell}>{transaction.worker || '-'}</td>
                         <td className={styles.tableCell}>{transaction.action_type}</td>
                         <td className={styles.tableCell}>{transaction.link_id || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.notes || '-'}</td>
                       </tr>
                     );
                   })

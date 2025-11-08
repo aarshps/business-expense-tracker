@@ -15,7 +15,6 @@ const transactionSchema = {
   worker: String,
   action_type: String,
   link_id: Number, // Changed to Number
-  notes: String,
   createdAt: { type: Date, default: Date.now },
   userId: String
 };
@@ -43,7 +42,7 @@ export default async function handler(req, res) {
     );
 
     if (req.method === 'POST') {
-      const { type, date, amount, folio_type, investor, worker, action_type, link_id, notes } = req.body;
+      const { type, date, amount, folio_type, investor, worker, action_type, link_id } = req.body;
 
       // Find highest existing ID and increment for new transaction
       const existingTransactions = await Transaction.find({}).sort({ id: -1 }).limit(1);
@@ -60,7 +59,6 @@ export default async function handler(req, res) {
         worker,
         action_type,
         link_id: link_id || null, // Use null if link_id is empty
-        notes,
         userId: session.user.id
       });
 
