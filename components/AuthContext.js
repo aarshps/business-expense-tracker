@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { SessionProvider, useSession } from 'next-auth/react';
+import InactivityDetector from './InactivityDetector';
 
 // Create contexts
 const AuthContext = createContext();
@@ -8,7 +9,9 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   return (
     <SessionProvider>
-      <AuthContextProvider>{children}</AuthContextProvider>
+      <InactivityDetector>
+        <AuthContextProvider>{children}</AuthContextProvider>
+      </InactivityDetector>
     </SessionProvider>
   );
 }

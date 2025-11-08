@@ -15,6 +15,7 @@ A Next.js application for tracking business expenses with individual database is
 - Responsive sidebar navigation
 - User-specific database naming convention
 - Secure session management
+- Automatic logout after 10 minutes of inactivity
 
 ## Database Naming Convention
 
