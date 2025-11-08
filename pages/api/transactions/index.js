@@ -8,13 +8,13 @@ import mongoose from 'mongoose';
 const transactionSchema = {
   id: Number, // Changed to Number for auto-incrementing
   type: String,
-  date: String,
-  amount: Number,
-  folio_type: String,
-  investor: String,
-  worker: String,
-  action_type: String,
-  link_id: Number, // Changed to Number
+  date: { type: String, default: null },
+  amount: { type: Number, default: null },
+  folio_type: { type: String, default: null },
+  investor: { type: String, default: null },
+  worker: { type: String, default: null },
+  action_type: { type: String, default: null },
+  link_id: { type: Number, default: null },
   createdAt: { type: Date, default: Date.now },
   userId: String
 };
@@ -52,12 +52,12 @@ export default async function handler(req, res) {
       const newTransaction = new Transaction({
         id: newId,
         type,
-        date,
+        date: date || null, // Use null if date is empty string
         amount: amount ? parseFloat(amount) : null, // Make amount null when empty
-        folio_type,
-        investor,
-        worker,
-        action_type,
+        folio_type: folio_type || null,
+        investor: investor || null,
+        worker: worker || null,
+        action_type: action_type || null,
         link_id: link_id || null, // Use null if link_id is empty
         userId: session.user.id
       });

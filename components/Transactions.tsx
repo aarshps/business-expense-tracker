@@ -9,13 +9,13 @@ import WorkerTransferForm from './WorkerTransferForm';
 type Transaction = {
   id: number;
   type: string;
-  date: string;
-  amount: number;
-  folio_type: string;
-  investor: string;
-  worker: string;
-  action_type: string;
-  link_id: number;
+  date: string | null;
+  amount: number | null;
+  folio_type: string | null;
+  investor: string | null;
+  worker: string | null;
+  action_type: string | null;
+  link_id: number | null;
   createdAt?: string;
 };
 
@@ -81,12 +81,12 @@ const Transactions = () => {
     await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
-  const handleWorkerAddExpenseSave = async (newTransaction: Transaction) => {
+  const handleWorkerAddExpenseSave = async (newTransactions: Transaction[]) => {
     setShowWorkerAddExpenseForm(false);
     await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
 
-  const handleInvestorAddExpenseSave = async (newTransaction: Transaction) => {
+  const handleInvestorAddExpenseSave = async (newTransactions: Transaction[]) => {
     setShowInvestorAddExpenseForm(false);
     await reloadTransactions(); // Reload to ensure grid is updated with latest data
   };
@@ -216,15 +216,15 @@ const Transactions = () => {
                       <tr key={transaction.id} className={rowClass}>
                         <td className={styles.tableCell}>{transaction.id}</td>
                         <td className={styles.tableCell}>{transaction.type}</td>
-                        <td className={styles.tableCell}>{transaction.date}</td>
+                        <td className={styles.tableCell}>{transaction.date || '-'}</td>
                         <td className={styles.tableCell}>
                           {transaction.amount ? `₹${transaction.amount.toFixed(2)}` : 
-                           (transaction.amount === 0 ? '₹0.00' : '')}
+                           (transaction.amount === 0 ? '₹0.00' : '-')}
                         </td>
                         <td className={styles.tableCell}>{transaction.folio_type || '-'}</td>
                         <td className={styles.tableCell}>{transaction.investor || '-'}</td>
                         <td className={styles.tableCell}>{transaction.worker || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.action_type}</td>
+                        <td className={styles.tableCell}>{transaction.action_type || '-'}</td>
                         <td className={styles.tableCell}>{transaction.link_id || '-'}</td>
                       </tr>
                     );

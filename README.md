@@ -103,128 +103,24 @@ The application is pre-configured for Vercel deployment with:
 
 ## Transactions Feature
 
-The Transactions feature provides multiple ways to record business activities:
+The Transactions feature provides multiple ways to record business activities with a comprehensive set of business rules designed to maintain accurate financial records and audit trails.
 
 ### Action Types
 - **Add Buffer Amount**: Creates 3 entries (2 investor entries with credit/debit and 1 worker entry)
-- **Worker Add Expense**: Records expenses associated with workers
-- **Investor Add Expense**: Records expenses associated with investors
+- **Worker Add Expense**: Creates 2 entries (1 worker debit and 1 expense entry linked to the worker debit)
+- **Investor Add Expense**: Creates 3 entries (2 investor entries with credit/debit and 1 expense entry linked to the investor debit)
 - **Worker Transfer**: Records transfers between workers
 
-### Buffer Amount Transaction Logic
-When adding a buffer amount, the system creates 3 separate entries in the database with specific rules:
+### Detailed Transaction Documentation
+For comprehensive information about each transaction type and business logic, please see the detailed documentation:
 
-1. **Investor Folio Credit Entry**:
-   - Type: "credit"
-   - Date: Form date value (populated)
-   - Amount: Form amount value (populated)
-   - Folio Type: "investor"
-   - Investor: Form investor value
-   - Worker: Empty (no worker reference needed for investor folio entries)
-   - Action Type: Empty
-   - Link ID: 0 or empty (no linking for this entry)
-   - Notes: Empty
-
-2. **Investor Folio Debit Entry**:
-   - Type: "debit"
-   - Date: Form date value (populated) 
-   - Amount: Form amount value (populated)
-   - Folio Type: "investor"
-   - Investor: Form investor value
-   - Worker: Empty (no worker reference needed for investor folio entries)
-   - Action Type: Empty
-   - Link ID: 0 or empty (no linking for this entry)
-   - Notes: Empty
-
-3. **Worker Folio Credit Entry** (linked to investor debit - via Link ID):
-   - Type: "credit"
-   - Date: Empty (since linked to investor debit entry)
-   - Amount: Empty (since linked to investor debit entry)
-   - Folio Type: "worker"
-   - Investor: Empty (since linked to investor debit entry)
-   - Worker: Form worker value
-   - Action Type: Empty
-   - Link ID: References the ID of the **investor debit entry** (entry #2 above)
-   - Notes: Empty
-
-### Worker Transfer Transaction Logic
-When performing a worker transfer, the system creates 2 separate entries in the database with specific rules:
-
-1. **Worker Folio Debit Entry** (from worker):
-   - Type: "debit"
-   - Date: Form date value (populated)
-   - Amount: Form amount value (populated)
-   - Folio Type: "worker"
-   - Investor: Empty (no investor reference needed for worker folio entries)
-   - Worker: "From Worker" value from form
-   - Action Type: "transfer"
-   - Link ID: 0 or empty (no linking for this entry)
-   - Notes: Empty
-
-2. **Worker Folio Credit Entry** (to worker, linked to debit):
-   - Type: "credit"
-   - Date: Empty (since linked to worker debit entry)
-   - Amount: Empty (since linked to worker debit entry)
-   - Folio Type: "worker"
-   - Investor: Empty (no investor reference needed for worker folio entries)
-   - Worker: "To Worker" value from form
-   - Action Type: "transfer"
-   - Link ID: References the ID of the **worker debit entry** (entry #1 above)
-   - Notes: Empty
-
-### Business Rules
-
-#### Golden Rule: Transaction Immutability
-- **NO TRANSACTIONS ARE EDITABLE**: Once a transaction is recorded, it cannot be modified
-- Only INSERT operations are allowed in the transactions table
-- If corrections are needed, new transactions must be added that offset the original transaction
-- This ensures complete transaction history and audit trail integrity
-
-#### Folio Type Behavior
-- **Investor Folio**: Records transactions related to investors
-  - Credit entries: Increase investor balance
-  - Debit entries: Decrease investor balance
-  - Date and amount fields are always populated for direct entries
-  - Worker field is empty for all investor folio entries
-
-- **Worker Folio**: Records transactions related to workers
-  - Credit entries: Increase worker balance or represent inflows
-  - Debit entries: Decrease worker balance or represent outflows
-  - When linked to another transaction (via link_id), date and amount are empty
-  - Investor field is empty when linked to another transaction
-
-#### Transaction Linking Rules
-- When transactions are linked using link_id:
-  - Date and amount fields in the linked transaction become empty
-  - The linked transaction inherits date and amount from the referenced transaction
-  - Investor field in the linked transaction becomes empty when linking to an investor transaction
-  - Worker field in the linked transaction can be different from the referenced transaction
-
-#### Link ID Reference Behavior
-- **Buffer Amount**: The worker folio credit entry links to the investor folio debit entry (Link ID = investor debit transaction's ID)
-- **Worker Transfer**: The "to worker" credit entry links to the "from worker" debit entry (Link ID = from worker debit transaction's ID)
-
-#### Type Column Behavior
-- **"credit"**: Row displayed with light pastel green background
-- **"debit"**: Row displayed with light pastel red background
-- Other types: Row displayed with normal background
-
-#### Auto-Incrementing IDs
-- All transactions have auto-incrementing IDs starting from 1
-- When multiple transactions are created together (e.g., Buffer Amount or Worker Transfer), they get consecutive IDs
-- Link ID references use the actual auto-generated IDs from the database
-
-### Database Structure
-Each transaction is stored with the following fields:
-- id: Auto-incrementing unique identifier for the transaction
-- type: Type of transaction (credit, debit, Worker Expense, Investor Expense, Worker Transfer)
-- date: Date of the transaction (empty when linked to another transaction)
-- amount: Amount value (empty when linked to another transaction)
-- folio_type: Type of folio (investor, worker)
-- investor: Associated investor (empty when linked to another transaction)
-- worker: Associated worker (if applicable)
-- action_type: Action type (expense, transfer, empty for credit/debit)
-- link_id: Link identifier (references another transaction ID, or empty)
+- [Transaction Overview](./docs/transactions-overview.md) - High-level overview of the transaction system
+- [Buffer Amount Flow](./docs/buffer-amount-flow.md) - Detailed business flow for buffer amount transactions
+- [Worker Transfer Flow](./docs/worker-transfer-flow.md) - Detailed business flow for worker transfer transactions
+- [Worker Add Expense Flow](./docs/worker-add-expense-flow.md) - Detailed business flow for worker expense transactions
+- [Investor Add Expense Flow](./docs/investor-add-expense-flow.md) - Detailed business flow for investor expense transactions
+- [Transaction Rules](./docs/transaction-rules.md) - Comprehensive business rules and validation
+- [Database Schema](./docs/database-schema.md) - Technical database schema and structure details
 
 ## Architecture
 
