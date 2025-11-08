@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiHome, FiDollarSign, FiBarChart2, FiUser, FiLogOut, FiDatabase, FiGlobe, FiMenu } from 'react-icons/fi';
+import { FiHome, FiCreditCard, FiBarChart2, FiUser, FiLogOut, FiDatabase, FiGlobe, FiMenu } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Transactions from '../Transactions';
@@ -28,7 +28,7 @@ export default function Sidebar({ children, title: propTitle, subtitle: propSubt
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: FiHome, title: 'Dashboard', subtitle: 'Welcome to your Business Expense Tracker' },
-    { id: 'transactions', label: 'Transactions', icon: FiDollarSign, title: 'Transactions', subtitle: 'Track and manage all transactions' },
+    { id: 'transactions', label: 'Transactions', icon: FiCreditCard, title: 'Transactions', subtitle: 'Track and manage all transactions' },
   ];
 
   useEffect(() => {

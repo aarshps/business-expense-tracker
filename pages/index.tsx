@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useSession, signIn } from 'next-auth/react';
 import Sidebar from '../components/layout/Sidebar';
 import Page from '../components/layout/Page';
+import Dashboard from '../components/Dashboard';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
@@ -52,7 +53,7 @@ export default function Home() {
 
       <Sidebar title="Dashboard" subtitle="Welcome to your Business Expense Tracker">
         <Page>
-          <p>Welcome to your Business Expense Tracker</p>
+          <Dashboard />
         </Page>
       </Sidebar>
     </div>
