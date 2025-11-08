@@ -69,9 +69,45 @@ export default async function handler(req, res) {
         transaction: newTransaction 
       });
     } else if (req.method === 'GET') {
-      // Fetch all transactions for this user
-      const transactions = await Transaction.find({ userId: session.user.id }).sort({ createdAt: -1 });
-      res.status(200).json(transactions);
+      // Extract query parameters for pagination and filtering
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 20; // Default to 20 items per page
+      const offset = (page - 1) * limit;
+      
+      // Build filter object from query parameters
+      const filter = { userId: session.user.id };
+      
+      // Add filters for each field if provided in query
+      const { type, date, amount, folio_type, investor, worker, action_type, link_id, id } = req.query;
+      if (type) filter.type = { $regex: type, $options: 'i' }; // Case insensitive
+      if (date) filter.date = { $regex: date, $options: 'i' };
+      if (amount) filter.amount = parseFloat(amount);
+      if (folio_type) filter.folio_type = { $regex: folio_type, $options: 'i' };
+      if (investor) filter.investor = { $regex: investor, $options: 'i' };
+      if (worker) filter.worker = { $regex: worker, $options: 'i' };
+      if (action_type) filter.action_type = { $regex: action_type, $options: 'i' };
+      if (link_id) filter.link_id = parseInt(link_id);
+      if (id) filter.id = parseInt(id);
+      
+      // Get total count for pagination info
+      const total = await Transaction.countDocuments(filter);
+      
+      // Fetch paginated transactions with filters
+      const transactions = await Transaction.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(offset)
+        .limit(limit);
+      
+      // Return transactions with pagination metadata
+      res.status(200).json({
+        data: transactions,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalItems: total,
+          itemsPerPage: limit
+        }
+      });
     } else {
       res.status(405).json({ message: 'Method not allowed' });
     }

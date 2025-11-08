@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useSession, signIn } from 'next-auth/react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/layout/Sidebar';
+import Page from '../components/layout/Page';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
@@ -50,10 +51,9 @@ export default function Home() {
       </Head>
 
       <Sidebar>
-        <div className={styles.content}>
-          <h1>Dashboard</h1>
+        <Page title="Dashboard" subtitle="Welcome to your Business Expense Tracker">
           <p>Welcome to your Business Expense Tracker</p>
-        </div>
+        </Page>
       </Sidebar>
     </div>
   );

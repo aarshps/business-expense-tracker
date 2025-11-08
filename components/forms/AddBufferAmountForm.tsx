@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import styles from './Transactions.module.css';
-import Spinner from './Spinner';
+import styles from '../Transactions.module.css';
+import Spinner from '../utils/Spinner';
 
 interface Transaction {
   id: number;

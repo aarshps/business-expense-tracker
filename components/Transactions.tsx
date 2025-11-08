@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import styles from './Transactions.module.css';
-import AddBufferAmountForm from './AddBufferAmountForm';
-import WorkerAddExpenseForm from './WorkerAddExpenseForm';
-import InvestorAddExpenseForm from './InvestorAddExpenseForm';
-import WorkerTransferForm from './WorkerTransferForm';
+import Page from './layout/Page';
+import AddBufferAmountForm from './forms/AddBufferAmountForm';
+import WorkerAddExpenseForm from './forms/WorkerAddExpenseForm';
+import InvestorAddExpenseForm from './forms/InvestorAddExpenseForm';
+import WorkerTransferForm from './forms/WorkerTransferForm';
+import TransactionTable from './ui/TransactionTable';
 
 // Define the transaction type
 type Transaction = {
@@ -19,6 +21,13 @@ type Transaction = {
   createdAt?: string;
 };
 
+type PaginationInfo = {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+};
+
 const Transactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showBufferAmountForm, setShowBufferAmountForm] = useState(false);
@@ -26,28 +35,80 @@ const Transactions = () => {
   const [showInvestorAddExpenseForm, setShowInvestorAddExpenseForm] = useState(false);
   const [showWorkerTransferForm, setShowWorkerTransferForm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load transactions from the database on component mount
+  // Filter state
+  const [filters, setFilters] = useState({
+    id: '',
+    type: '',
+    date: '',
+    amount: '',
+    folio_type: '',
+    investor: '',
+    worker: '',
+    action_type: '',
+    link_id: ''
+  });
+
+  // Pagination state - dynamically calculated based on available screen space
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 15  // Reduced from 20 to allow for better responsive display
+  });
+
+  // Load transactions from the database on component mount or when filters/pagination change
   useEffect(() => {
     const fetchTransactions = async () => {
+      setIsLoading(true);
+
+      // Build query string from filters and pagination
+      const queryParams = new URLSearchParams({
+        page: pagination.currentPage.toString(),
+        limit: pagination.itemsPerPage.toString(),
+      });
+
+      // Add filters to query params if they have values
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== '') {
+          queryParams.append(key, value);
+        }
+      });
+
       try {
-        const response = await fetch('/api/transactions');
+        const response = await fetch(`/api/transactions?${queryParams}`);
         if (response.ok) {
           const data = await response.json();
-          setTransactions(data);
+
+          // Handle response with pagination metadata
+          if (data.data && data.pagination) {
+            setTransactions(data.data);
+            setPagination(data.pagination);
+          } else {
+            // Fallback for non-paginated responses
+            setTransactions(data);
+            // Calculate pagination based on available data
+            const totalItems = Array.isArray(data) ? data.length : 0;
+            const totalPages = Math.ceil(totalItems / pagination.itemsPerPage);
+            setPagination(prev => ({
+              ...prev,
+              totalItems,
+              totalPages: totalPages || 1  // Ensure at least 1 page
+            }));
+          }
         } else {
           console.error('Failed to fetch transactions');
         }
       } catch (error) {
         console.error('Error fetching transactions:', error);
       } finally {
-        setIsLoading(false); // Set loading to false when fetch completes
+        setIsLoading(false);
       }
     };
 
     fetchTransactions();
-  }, []);
+  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
 
   // Close all forms function
   const closeAllForms = () => {
@@ -59,20 +120,25 @@ const Transactions = () => {
 
   // Function to reload transactions from the server
   const reloadTransactions = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/transactions');
-      if (response.ok) {
-        const data = await response.json();
-        setTransactions(data);
-      } else {
-        console.error('Failed to fetch transactions');
-      }
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    // Reset to first page when reloading
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 1
+    }));
+  };
+
+  // Handler for filter changes
+  const handleFilterChange = (field: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Reset to first page when filters change
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 1
+    }));
   };
 
   // Handler functions for each form
@@ -97,150 +163,91 @@ const Transactions = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.header}>Transactions</h1>
-      
-      {/* Action Buttons Section */}
-      <div className={styles.buttonsContainer}>
-        <button 
-          onClick={() => {
-            closeAllForms();
-            setShowBufferAmountForm(true);
-          }}
-          className={`${styles.button} ${styles.buttonBufferAmount}`}
-        >
-          Add Buffer Amount
-        </button>
-        
-        <button 
-          onClick={() => {
-            closeAllForms();
-            setShowWorkerAddExpenseForm(true);
-          }}
-          className={`${styles.button} ${styles.buttonWorkerExpense}`}
-        >
-          Worker Add Expense
-        </button>
-        
-        <button 
-          onClick={() => {
-            closeAllForms();
-            setShowInvestorAddExpenseForm(true);
-          }}
-          className={`${styles.button} ${styles.buttonInvestorExpense}`}
-        >
-          Investor Add Expense
-        </button>
-        
-        <button 
-          onClick={() => {
-            closeAllForms();
-            setShowWorkerTransferForm(true);
-          }}
-          className={`${styles.button} ${styles.buttonWorkerTransfer}`}
-        >
-          Worker Transfer
-        </button>
-      </div>
+    <Page title="Transactions" subtitle="Track and manage all transactions">
+      <div className={styles.transactionContent}>
+        {/* Action Buttons Section */}
+        <div className={styles.buttonsContainer}>
+          <button
+            onClick={() => {
+              closeAllForms();
+              setShowBufferAmountForm(true);
+            }}
+            className={`${styles.button} ${styles.buttonBufferAmount}`}
+          >
+            Add Buffer Amount
+          </button>
+
+          <button
+            onClick={() => {
+              closeAllForms();
+              setShowWorkerAddExpenseForm(true);
+            }}
+            className={`${styles.button} ${styles.buttonWorkerExpense}`}
+          >
+            Worker Add Expense
+          </button>
+
+          <button
+            onClick={() => {
+              closeAllForms();
+              setShowInvestorAddExpenseForm(true);
+            }}
+            className={`${styles.button} ${styles.buttonInvestorExpense}`}
+          >
+            Investor Add Expense
+          </button>
+
+          <button
+            onClick={() => {
+              closeAllForms();
+              setShowWorkerTransferForm(true);
+            }}
+            className={`${styles.button} ${styles.buttonWorkerTransfer}`}
+          >
+            Worker Transfer
+          </button>
+        </div>
 
       {/* Form Modals - Now using separate components */}
       {showBufferAmountForm && (
-        <AddBufferAmountForm 
-          onClose={() => setShowBufferAmountForm(false)} 
+        <AddBufferAmountForm
+          onClose={() => setShowBufferAmountForm(false)}
           onSave={handleBufferAmountSave}
         />
       )}
 
       {showWorkerAddExpenseForm && (
-        <WorkerAddExpenseForm 
-          onClose={() => setShowWorkerAddExpenseForm(false)} 
+        <WorkerAddExpenseForm
+          onClose={() => setShowWorkerAddExpenseForm(false)}
           onSave={handleWorkerAddExpenseSave}
         />
       )}
 
       {showInvestorAddExpenseForm && (
-        <InvestorAddExpenseForm 
-          onClose={() => setShowInvestorAddExpenseForm(false)} 
+        <InvestorAddExpenseForm
+          onClose={() => setShowInvestorAddExpenseForm(false)}
           onSave={handleInvestorAddExpenseSave}
         />
       )}
 
       {showWorkerTransferForm && (
-        <WorkerTransferForm 
-          onClose={() => setShowWorkerTransferForm(false)} 
+        <WorkerTransferForm
+          onClose={() => setShowWorkerTransferForm(false)}
           onSave={handleWorkerTransferSave}
         />
       )}
 
       {/* Transaction Table */}
-      <div className={styles.tableContainer}>
-        <div className={styles.tableHeaderContainer}>
-          <h2 className={styles.tableHeader}>Transaction History</h2>
-          <div className={styles.immutableNote}>Note: Transactions are immutable - no edits allowed after creation</div>
-        </div>
-        <div className="overflow-x-auto">
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.tableHeaderCell}>ID</th>
-                <th className={styles.tableHeaderCell}>Type</th>
-                <th className={styles.tableHeaderCell}>Date</th>
-                <th className={styles.tableHeaderCell}>Amount</th>
-                <th className={styles.tableHeaderCell}>Folio Type</th>
-                <th className={styles.tableHeaderCell}>Investor</th>
-                <th className={styles.tableHeaderCell}>Worker</th>
-                <th className={styles.tableHeaderCell}>Action Type</th>
-                <th className={styles.tableHeaderCell}>Link ID</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={10} className={styles.loadingState}>
-                    Loading transactions...
-                  </td>
-                </tr>
-              ) : transactions.length > 0 ? (
-                transactions
-                  .sort((a, b) => b.id - a.id) // Sort by ID in descending order
-                  .map((transaction) => {
-                    // Determine row background based on type
-                    let rowClass = styles.tableRow;
-                    if (transaction.type === 'credit') {
-                      rowClass += ` ${styles.creditRow}`; // Light pastel green
-                    } else if (transaction.type === 'debit') {
-                      rowClass += ` ${styles.debitRow}`; // Light pastel red
-                    }
-                    
-                    return (
-                      <tr key={transaction.id} className={rowClass}>
-                        <td className={styles.tableCell}>{transaction.id}</td>
-                        <td className={styles.tableCell}>{transaction.type}</td>
-                        <td className={styles.tableCell}>{transaction.date || '-'}</td>
-                        <td className={styles.tableCell}>
-                          {transaction.amount ? `₹${transaction.amount.toFixed(2)}` : 
-                           (transaction.amount === 0 ? '₹0.00' : '-')}
-                        </td>
-                        <td className={styles.tableCell}>{transaction.folio_type || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.investor || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.worker || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.action_type || '-'}</td>
-                        <td className={styles.tableCell}>{transaction.link_id || '-'}</td>
-                      </tr>
-                    );
-                  })
-              ) : (
-                <tr>
-                  <td colSpan={10} className={styles.emptyState}>
-                    No transactions yet. Add a transaction using the buttons above.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <TransactionTable 
+        filters={filters}
+        pagination={pagination}
+        setPagination={setPagination}
+        handleFilterChange={handleFilterChange}
+        isLoading={isLoading}
+        transactions={transactions}
+      />
     </div>
+    </Page>
   );
 };
 

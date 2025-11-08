@@ -1,5 +1,8 @@
 .container {
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .centerContent {
@@ -7,8 +10,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1; /* Take remaining space */
 }
 
 .content {
@@ -31,7 +36,7 @@
 }
 
 .signinButton {
-  background-color: #4285f4;
+  background-color: var(--brand-color-start);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -45,7 +50,7 @@
 }
 
 .signinButton:hover {
-  background-color: #3367d6;
+  background-color: var(--brand-color-start-dark);
 }
 
 .googleLogo {
@@ -57,6 +62,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   font-size: 1.25rem;
+  width: 100%;
+  flex: 1; /* Take remaining space */
 }
