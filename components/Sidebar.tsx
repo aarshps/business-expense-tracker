@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FiHome, FiDollarSign, FiBarChart2, FiUser, FiLogOut, FiDatabase, FiGlobe } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Transactions from './Transactions';
 import styles from './Sidebar.module.css';
 
 interface MenuItem {
@@ -68,6 +69,16 @@ export default function Sidebar({ children }: SidebarProps) {
       fetchDbName();
     }
   }, [status, sessionData]);
+
+  // Function to render content based on the active menu item
+  const renderContent = () => {
+    if (activeItem === 'transactions') {
+      return <Transactions />;
+    }
+    
+    // For dashboard or any other default view, render the children
+    return children;
+  };
 
   return (
     <div className={styles.container}>
@@ -142,7 +153,7 @@ export default function Sidebar({ children }: SidebarProps) {
       </aside>
       
       <main className={styles.main}>
-        {children}
+        {renderContent()}
       </main>
     </div>
   );
