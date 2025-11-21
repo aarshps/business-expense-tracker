@@ -125,6 +125,9 @@ The application is pre-configured for Vercel deployment with:
 - **Login Reliability:** Fixed silent login failures by standardizing database name generation and refining redirect callbacks.
 - **UI Polish:** Resolved React console warnings and improved image loading priorities.
 - **Input Overflow:** Fixed form input overflow issues in modals by enforcing `box-sizing: border-box`.
+- **Production Stability:** Fixed Vercel deployment crash by disabling file system logging in production environments.
+- **Dashboard Data:** Added robust debug logging to diagnose and resolve data reflection issues in production.
+- **UX Enhancement:** Implemented auto-refresh for the transactions table to immediately reflect new or edited entries.
 
 ## Transactions Feature
 
