@@ -136,3 +136,17 @@
 .loadingRow:last-child {
   border-bottom: none;
 }
+
+@media (max-width: 768px) {
+  .sectionContainer {
+    flex-direction: column;
+  }
+
+  .tablesContainer {
+    flex-direction: column;
+  }
+
+  .leftTable, .rightTable {
+    width: 100%;
+  }
+}

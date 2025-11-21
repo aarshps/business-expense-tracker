@@ -23,9 +23,9 @@ export default function Home() {
           <link rel="icon" type="image/x-icon" href="/favicon.png" />
           <link rel="icon" type="image/png" sizes="32x32" href="/logo/round-logo.png" />
         </Head>
-        
+
         <div className={styles.centerContent}>
-          <button 
+          <button
             className={styles.signinButton}
             onClick={() => signIn('google', { callbackUrl: '/' })}
           >

@@ -86,24 +86,60 @@ export default function Sidebar({ children, title: propTitle, subtitle: propSubt
     return children;
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Close mobile menu when item is clicked
+  const handleItemClick = (itemId: string, title: string, subtitle: string) => {
+    setActiveItem(itemId);
+    setDynamicTitle(title);
+    setDynamicSubtitle(subtitle);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className={styles.layoutContainer}>
       {/* Header at the top of the page */}
       <header className={styles.topHeader}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
+            <button
+              className={styles.mobileToggle}
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              <FiMenu />
+            </button>
             <div className={styles.logoSection}>
-              <Image
-                src="/logo/side-nav-logo.png"
-                alt="Business Expense Tracker"
-                width={150}
-                height={50}
-                className={styles.navLogo}
-                unoptimized
-              />
+              <div className={styles.desktopLogo}>
+                <Image
+                  src="/logo/side-nav-logo.png"
+                  alt="Business Expense Tracker"
+                  width={150}
+                  height={50}
+                  className={styles.navLogo}
+                  priority
+                  style={{ width: 'auto', height: 'auto' }}
+                  unoptimized
+                />
+              </div>
+              <div className={styles.mobileLogo}>
+                <Image
+                  src="/logo/round-logo.png"
+                  alt="BET"
+                  width={40}
+                  height={40}
+                  className={styles.navLogoMobile}
+                  priority
+                  unoptimized
+                />
+              </div>
             </div>
           </div>
-          
+
           {(dynamicTitle || propTitle) && (
             <div className={styles.headerTitleSection}>
               <h1 className={styles.headerTitle}>{dynamicTitle || propTitle}</h1>
@@ -115,20 +151,15 @@ export default function Sidebar({ children, title: propTitle, subtitle: propSubt
 
       <div className={styles.mainLayout}>
         {/* Collapsible sidebar navigation */}
-        <aside className={styles.sidebar}>
+        <aside className={`${styles.sidebar} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}>
           <nav className={styles.nav}>
             <ul className={styles.menuList}>
               {menuItems.map((item) => (
                 <li key={item.id} className={styles.menuItem}>
                   <button
-                    className={`${styles.menuButton} ${
-                      activeItem === item.id ? styles.active : ''
-                    }`}
-                    onClick={() => {
-                      setActiveItem(item.id);
-                      setDynamicTitle(item.title);
-                      setDynamicSubtitle(item.subtitle);
-                    }}
+                    className={`${styles.menuButton} ${activeItem === item.id ? styles.active : ''
+                      }`}
+                    onClick={() => handleItemClick(item.id, item.title, item.subtitle)}
                   >
                     <item.icon className={styles.icon} />
                     <span>{item.label}</span>

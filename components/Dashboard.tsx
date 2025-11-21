@@ -14,13 +14,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      console.log('Fetching dashboard data...');
       try {
         const response = await fetch('/api/dashboard/investor-investments');
-        console.log('Response status:', response.status);
         if (response.ok) {
           const data = await response.json();
-          console.log('API response data:', data);
           setTotalInvestment(data.total || 0);
           setInvestmentsByInvestor(data.byInvestor || {});
           setTotalExpense(data.totalExpense || 0);
@@ -126,7 +123,7 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        
+
         <div className={styles.rightTable}>
           {loading ? (
             <div className={styles.loadingTable}>

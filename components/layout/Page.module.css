@@ -3,14 +3,22 @@
   flex-direction: column;
   flex-grow: 1;
   height: 100%;
-  min-height: 0; /* Allow flex item to shrink */
+  min-height: 0;
+  /* Allow flex item to shrink */
 }
 
 .pageContent {
   flex: 1;
-  padding: 1rem 1rem 1rem 1rem; /* Maintain padding but consider header alignment */
+  padding: 1rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Allow flex item to shrink */
+  min-height: 0;
+  /* Allow flex item to shrink */
+}
+
+@media (max-width: 768px) {
+  .pageContent {
+    padding: 0.5rem;
+  }
 }

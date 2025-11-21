@@ -5,6 +5,7 @@ import User, { userSchema } from '../../../models/User';
 import { generateDbName, getIdentifierFromProfile, getIdentifierFromSession } from '../../../lib/dbNameUtils';
 
 export const authOptions = {
+  debug: false, // Disable debug messages for authentication
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -23,6 +24,7 @@ export const authOptions = {
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
+        console.log('SignIn Callback - Profile:', JSON.stringify(profile));
         // Create database name using the centralized utility
         const identifier = getIdentifierFromProfile(profile);
         const dbName = generateDbName(identifier);
@@ -88,30 +90,36 @@ export const authOptions = {
       }
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.googleId; // Use sub as the Google ID
-        token.googleId = user.googleId;
-        token.id = user.id;
+      try {
+        if (user) {
+          console.log('JWT Callback - User:', JSON.stringify(user));
+          token.sub = user.googleId; // Use sub as the Google ID
+          token.googleId = user.googleId;
+          token.id = user.id;
 
-        // Generate dbName using the centralized utility
-        const identifier = user.email ? user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, '_') : user.googleId;
-        const dbName = generateDbName(identifier);
-        token.dbName = dbName; // Include dbName in the token
+          // Generate dbName using the centralized utility
+          // Use the same logic as getIdentifierFromProfile/Session: use email username or googleId
+          const identifier = user.email ? user.email.split('@')[0] : user.googleId;
+          console.log('JWT Callback - Identifier:', identifier);
+
+          const dbName = generateDbName(identifier);
+          console.log('JWT Callback - Generated DB Name:', dbName);
+
+          token.dbName = dbName; // Include dbName in the token
+        }
+        return token;
+      } catch (error) {
+        console.error('Error in jwt callback:', error);
+        return token;
       }
-      return token;
     },
     // Add redirect callback to control where users are redirected
     async redirect({ url, baseUrl }) {
-      // If the redirect is to the sign-in page, redirect to home instead
-      if (url.includes('/auth/') || url.includes('/api/auth/signin')) {
-        return `${baseUrl}/`;
-      }
-      // Allow relative callback URLs
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      // Allow callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url;
-      // Prevent other URLs
-      return baseUrl;
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

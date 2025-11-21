@@ -113,6 +113,19 @@ The application is pre-configured for Vercel deployment with:
 - `/api/health` - Health check endpoint
 - `/api/transactions` - Manages transaction records for each user's database
 
+## Recent Updates
+
+### Mobile Responsiveness
+- **Optimized Header:** Mobile-specific logo and font sizing for better space utilization.
+- **Responsive Tables:** Horizontal scrolling confined to table containers, preventing page-wide scroll issues.
+- **Adaptive Forms:** Stacked inputs and full-width buttons on mobile devices for better usability.
+- **Global Layout:** Adjusted padding and margins for smaller screens.
+
+### Bug Fixes & Improvements
+- **Login Reliability:** Fixed silent login failures by standardizing database name generation and refining redirect callbacks.
+- **UI Polish:** Resolved React console warnings and improved image loading priorities.
+- **Input Overflow:** Fixed form input overflow issues in modals by enforcing `box-sizing: border-box`.
+
 ## Transactions Feature
 
 The Transactions feature provides multiple ways to record business activities with a comprehensive set of business rules designed to maintain accurate financial records and audit trails.
