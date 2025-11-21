@@ -21,7 +21,11 @@ const transactionSchema = {
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
-  
+
+  if (session) {
+    console.log(`[Transactions API] Session User ID: ${session.user.id}`);
+  }
+
   if (!session) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
@@ -33,10 +37,10 @@ export default async function handler(req, res) {
 
     // Connect to the user's specific database
     const dbConnection = await dbConnect(dbName);
-    
+
     // Create the Transaction model for this specific database
     const Transaction = dbConnection.model(
-      'Transaction', 
+      'Transaction',
       new mongoose.Schema(transactionSchema),
       'transactions' // collection name
     );
@@ -64,19 +68,19 @@ export default async function handler(req, res) {
 
       await newTransaction.save();
 
-      res.status(201).json({ 
-        message: 'Transaction saved successfully', 
-        transaction: newTransaction 
+      res.status(201).json({
+        message: 'Transaction saved successfully',
+        transaction: newTransaction
       });
     } else if (req.method === 'GET') {
       // Extract query parameters for pagination and filtering
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20; // Default to 20 items per page
       const offset = (page - 1) * limit;
-      
+
       // Build filter object from query parameters
       const filter = { userId: session.user.id };
-      
+
       // Add filters for each field if provided in query
       const { type, date, amount, folio_type, investor, worker, action_type, link_id, id } = req.query;
       if (type) filter.type = { $regex: type, $options: 'i' }; // Case insensitive
@@ -88,16 +92,16 @@ export default async function handler(req, res) {
       if (action_type) filter.action_type = { $regex: action_type, $options: 'i' };
       if (link_id) filter.link_id = parseInt(link_id);
       if (id) filter.id = parseInt(id);
-      
+
       // Get total count for pagination info
       const total = await Transaction.countDocuments(filter);
-      
+
       // Fetch paginated transactions with filters
       const transactions = await Transaction.find(filter)
         .sort({ createdAt: -1 })
         .skip(offset)
         .limit(limit);
-      
+
       // Return transactions with pagination metadata
       res.status(200).json({
         data: transactions,
