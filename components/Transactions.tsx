@@ -36,6 +36,7 @@ const Transactions = () => {
   const [showWorkerTransferForm, setShowWorkerTransferForm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add trigger for manual refreshes
 
   // Filter state
   const [filters, setFilters] = useState({
@@ -108,7 +109,7 @@ const Transactions = () => {
     };
 
     fetchTransactions();
-  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
+  }, [filters, pagination.currentPage, pagination.itemsPerPage, refreshTrigger]); // Add refreshTrigger dependency
 
   // Close all forms function
   const closeAllForms = () => {
@@ -120,11 +121,12 @@ const Transactions = () => {
 
   // Function to reload transactions from the server
   const reloadTransactions = async () => {
-    // Reset to first page when reloading
+    // Reset to first page when reloading and trigger fetch
     setPagination(prev => ({
       ...prev,
       currentPage: 1
     }));
+    setRefreshTrigger(prev => prev + 1);
   };
 
   // Handler for filter changes
@@ -208,45 +210,45 @@ const Transactions = () => {
           </button>
         </div>
 
-      {/* Form Modals - Now using separate components */}
-      {showBufferAmountForm && (
-        <AddBufferAmountForm
-          onClose={() => setShowBufferAmountForm(false)}
-          onSave={handleBufferAmountSave}
-        />
-      )}
+        {/* Form Modals - Now using separate components */}
+        {showBufferAmountForm && (
+          <AddBufferAmountForm
+            onClose={() => setShowBufferAmountForm(false)}
+            onSave={handleBufferAmountSave}
+          />
+        )}
 
-      {showWorkerAddExpenseForm && (
-        <WorkerAddExpenseForm
-          onClose={() => setShowWorkerAddExpenseForm(false)}
-          onSave={handleWorkerAddExpenseSave}
-        />
-      )}
+        {showWorkerAddExpenseForm && (
+          <WorkerAddExpenseForm
+            onClose={() => setShowWorkerAddExpenseForm(false)}
+            onSave={handleWorkerAddExpenseSave}
+          />
+        )}
 
-      {showInvestorAddExpenseForm && (
-        <InvestorAddExpenseForm
-          onClose={() => setShowInvestorAddExpenseForm(false)}
-          onSave={handleInvestorAddExpenseSave}
-        />
-      )}
+        {showInvestorAddExpenseForm && (
+          <InvestorAddExpenseForm
+            onClose={() => setShowInvestorAddExpenseForm(false)}
+            onSave={handleInvestorAddExpenseSave}
+          />
+        )}
 
-      {showWorkerTransferForm && (
-        <WorkerTransferForm
-          onClose={() => setShowWorkerTransferForm(false)}
-          onSave={handleWorkerTransferSave}
-        />
-      )}
+        {showWorkerTransferForm && (
+          <WorkerTransferForm
+            onClose={() => setShowWorkerTransferForm(false)}
+            onSave={handleWorkerTransferSave}
+          />
+        )}
 
-      {/* Transaction Table */}
-      <TransactionTable 
-        filters={filters}
-        pagination={pagination}
-        setPagination={setPagination}
-        handleFilterChange={handleFilterChange}
-        isLoading={isLoading}
-        transactions={transactions}
-      />
-    </div>
+        {/* Transaction Table */}
+        <TransactionTable
+          filters={filters}
+          pagination={pagination}
+          setPagination={setPagination}
+          handleFilterChange={handleFilterChange}
+          isLoading={isLoading}
+          transactions={transactions}
+        />
+      </div>
     </div>
   );
 };
